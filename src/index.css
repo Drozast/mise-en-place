@@ -18,9 +18,18 @@ body {
   color: #222629;
 }
 
+.dark body {
+  background-color: #0f172a;
+  color: #e5e7eb;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Manrope', sans-serif;
   color: #1A1A1A;
+}
+
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #ffffff;
 }
 
 button {
