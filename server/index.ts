@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { db } from './database/db.js';
 import authRouter from './routes/auth.js';
 import ingredientsRouter from './routes/ingredients.js';
@@ -12,17 +14,28 @@ import alertsRouter from './routes/alerts.js';
 import reportsRouter from './routes/reports.js';
 import gamificationRouter from './routes/gamification.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const httpServer = createServer(app);
+
+// Configure CORS based on environment
+const corsOrigin = process.env.CORS_ORIGIN || process.env.NODE_ENV === 'production'
+  ? '*'
+  : 'http://localhost:3000';
+
 const io = new Server(httpServer, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: corsOrigin,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   },
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: corsOrigin
+}));
 app.use(express.json());
 
 // Make io available in routes
@@ -42,6 +55,19 @@ app.use('/api/gamification', gamificationRouter);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Serve static files from React build in production
+if (process.env.NODE_ENV === 'production') {
+  const distPath = path.join(__dirname, '..', 'dist');
+  app.use(express.static(distPath));
+
+  // Handle React routing - return index.html for all non-API routes
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(distPath, 'index.html'));
+    }
+  });
+}
 
 // Socket.io connection
 io.on('connection', (socket) => {

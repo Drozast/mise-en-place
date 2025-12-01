@@ -8,6 +8,8 @@
     "dev:server": "tsx watch server/index.ts",
     "dev:client": "vite",
     "build": "tsc && vite build",
+    "build:server": "tsc --project tsconfig.node.json",
+    "start": "node --loader tsx server/index.ts",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -23,7 +25,8 @@
     "zustand": "^4.4.7",
     "lucide-react": "^0.300.0",
     "clsx": "^2.0.0",
-    "tailwind-merge": "^2.2.0"
+    "tailwind-merge": "^2.2.0",
+    "tsx": "^4.7.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.45",
@@ -37,7 +40,6 @@
     "tailwindcss": "^3.4.0",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
-    "tsx": "^4.7.0",
     "concurrently": "^8.2.2"
   }
 }
