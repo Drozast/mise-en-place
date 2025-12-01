@@ -10,7 +10,7 @@
     "build": "vite build",
     "build:check": "tsc && vite build",
     "build:server": "tsc --project tsconfig.node.json",
-    "start": "node --loader tsx server/index.ts",
+    "start": "node --import tsx server/index.ts",
     "preview": "vite preview"
   },
   "dependencies": {
