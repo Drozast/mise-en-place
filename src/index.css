@@ -9,13 +9,23 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #0f172a;
-  color: #e2e8f0;
+  background-color: #FAFAFA;
+  color: #222629;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Manrope', sans-serif;
+  color: #1A1A1A;
+}
+
+button {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
 }
 
 /* Custom scrollbar */
@@ -25,16 +35,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1e293b;
+  background: #FAFAFA;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #475569;
+  background: #CFCFCF;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: #86C232;
 }
 
 code {
@@ -48,9 +58,9 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px white inset !important;
-  -webkit-text-fill-color: #0f172a !important;
+  -webkit-text-fill-color: #1A1A1A !important;
   box-shadow: 0 0 0 30px white inset !important;
-  caret-color: #0f172a !important;
+  caret-color: #1A1A1A !important;
 }
 
 /* Asegurar que el texto sea visible en todos los estados */
@@ -58,22 +68,22 @@ input[type="text"],
 input[type="password"],
 input[type="number"],
 input[type="email"] {
-  color: #0f172a !important;
-  -webkit-text-fill-color: #0f172a !important;
+  color: #1A1A1A !important;
+  -webkit-text-fill-color: #1A1A1A !important;
 }
 
 /* Para inputs con fondo oscuro */
 input.dark-input {
-  color: #e2e8f0 !important;
-  -webkit-text-fill-color: #e2e8f0 !important;
+  color: #FAFAFA !important;
+  -webkit-text-fill-color: #FAFAFA !important;
 }
 
 input.dark-input:-webkit-autofill,
 input.dark-input:-webkit-autofill:hover,
 input.dark-input:-webkit-autofill:focus,
 input.dark-input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px #0f172a inset !important;
-  -webkit-text-fill-color: #e2e8f0 !important;
-  box-shadow: 0 0 0 30px #0f172a inset !important;
-  caret-color: #e2e8f0 !important;
+  -webkit-box-shadow: 0 0 0 30px #1A1A1A inset !important;
+  -webkit-text-fill-color: #FAFAFA !important;
+  box-shadow: 0 0 0 30px #1A1A1A inset !important;
+  caret-color: #FAFAFA !important;
 }

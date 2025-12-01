@@ -32,22 +32,22 @@ export default function LayoutNew() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-900 text-dark-200">
+    <div className="min-h-screen bg-background text-text-secondary">
       {/* Header */}
-      <header className="bg-dark-800 border-b border-dark-700">
+      <header className="bg-white border-b border-border shadow-sm">
         <div className="px-6 py-4 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold">
-              <span className="text-white">Sistema de</span>{' '}
-              <span className="text-orange-500">Mise en Place</span>
+            <h1 className="text-2xl font-bold font-heading">
+              <span className="text-text-primary">Sistema de</span>{' '}
+              <span className="text-primary">Mise en Place</span>
             </h1>
-            <p className="text-sm text-dark-400 mt-1">
+            <p className="text-sm text-text-secondary mt-1">
               Control de inventario y ventas en tiempo real
               {user && (
                 <span className="ml-3">
-                  • <span className="text-dark-300">{user.name}</span>
+                  • <span className="text-text-primary">{user.name}</span>
                   {user.role === 'chef' && (
-                    <span className="ml-2 px-2 py-0.5 bg-orange-900 text-orange-300 text-xs rounded">
+                    <span className="ml-2 px-2 py-0.5 bg-primary-dark text-white text-xs rounded font-heading">
                       Admin
                     </span>
                   )}
@@ -57,7 +57,7 @@ export default function LayoutNew() {
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-lg font-bold transition-all shadow-md hover:shadow-lg font-heading"
           >
             <LogOut className="w-5 h-5" />
             Cerrar Sesión
@@ -77,8 +77,8 @@ export default function LayoutNew() {
                   to={item.path}
                   className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
                     isActive
-                      ? 'border-orange-500 text-orange-500'
-                      : 'border-transparent text-dark-400 hover:text-dark-200'
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-text-secondary hover:text-text-primary'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -93,8 +93,8 @@ export default function LayoutNew() {
                 to="/usuarios"
                 className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
                   location.pathname === '/usuarios'
-                    ? 'border-orange-500 text-orange-500'
-                    : 'border-transparent text-dark-400 hover:text-dark-200'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-text-secondary hover:text-text-primary'
                 }`}
               >
                 <Users className="w-4 h-4" />
