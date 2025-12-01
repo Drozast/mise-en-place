@@ -66,13 +66,13 @@ export default function ShiftsNew() {
   };
 
   if (loading) {
-    return <div className="text-center py-12 text-dark-300">Cargando...</div>;
+    return <div className="text-center py-12 text-gray-600 dark:text-dark-400">Cargando...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Checklist</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Checklist</h1>
         {!currentShift && (
           <button
             onClick={() => setShowOpenModal(true)}
@@ -87,13 +87,13 @@ export default function ShiftsNew() {
       {currentShift ? (
         <div className="space-y-6">
           {/* Shift Info */}
-          <div className="bg-dark-800 border border-dark-700 rounded-xl p-6">
+          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-2xl font-bold text-white">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                   Turno {currentShift.type} - {currentShift.employee_name}
                 </h2>
-                <p className="text-dark-400 mt-1">
+                <p className="text-gray-600 dark:text-dark-400 mt-1">
                   {new Date(currentShift.date).toLocaleDateString('es-ES')} •{' '}
                   {new Date(currentShift.start_time).toLocaleTimeString('es-ES', {
                     hour: '2-digit',
@@ -108,10 +108,10 @@ export default function ShiftsNew() {
           </div>
 
           {/* Tasks Checklist */}
-          <div className="bg-dark-800 border border-dark-700 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">
+          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
               Tareas del Turno
-              <span className="ml-3 text-base text-dark-400 font-normal">
+              <span className="ml-3 text-base text-gray-600 dark:text-dark-400 font-normal">
                 ({currentShift.tasks?.filter((t: any) => t.completed).length || 0} /{' '}
                 {currentShift.tasks?.length || 0})
               </span>
@@ -143,7 +143,7 @@ export default function ShiftsNew() {
                     className={`rounded-lg border-2 transition-all ${
                       task.completed
                         ? 'bg-green-950 border-green-800'
-                        : 'bg-dark-900 border-dark-700 hover:border-dark-600'
+                        : 'bg-gray-50 dark:bg-dark-900 border-gray-200 dark:border-dark-700 hover:border-gray-300 dark:hover:border-dark-600'
                     }`}
                   >
                     <div
@@ -158,7 +158,7 @@ export default function ShiftsNew() {
                       <div className="flex-1">
                         <span
                           className={`${
-                            task.completed ? 'line-through text-dark-400' : 'text-white'
+                            task.completed ? 'line-through text-gray-600 dark:text-dark-400' : 'text-gray-900 dark:text-white'
                           }`}
                         >
                           {task.task_name}
@@ -173,7 +173,7 @@ export default function ShiftsNew() {
                             })}
                           </div>
                           {timeElapsed !== null && (
-                            <div className="text-xs text-dark-400">
+                            <div className="text-xs text-gray-600 dark:text-dark-400">
                               {timeElapsed > 0 ? `+${timeElapsed}` : timeElapsed} min
                             </div>
                           )}
@@ -198,10 +198,10 @@ export default function ShiftsNew() {
           </div>
         </div>
       ) : (
-        <div className="bg-dark-800 border border-dark-700 rounded-xl p-12 text-center">
+        <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-12 text-center shadow-lg">
           <Clock className="w-16 h-16 text-dark-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-2">No hay turno abierto</h2>
-          <p className="text-dark-400 mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No hay turno abierto</h2>
+          <p className="text-gray-600 dark:text-dark-400 mb-6">
             Abre un nuevo turno para comenzar a trabajar
           </p>
           <button
@@ -279,8 +279,8 @@ function OpenShiftModal({ onClose, onSuccess }: any) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-dark-800 border border-dark-700 rounded-xl p-6 w-full max-w-3xl my-8">
-        <h2 className="text-2xl font-bold text-white mb-6">Abrir Nuevo Turno</h2>
+      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-3xl my-8 shadow-lg">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Abrir Nuevo Turno</h2>
 
         {/* Inventory Summary */}
         {!loading && (
@@ -292,16 +292,16 @@ function OpenShiftModal({ onClose, onSuccess }: any) {
               </div>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-white">{ingredients.length}</div>
-                  <div className="text-xs text-dark-400">Total Ingredientes</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{ingredients.length}</div>
+                  <div className="text-xs text-gray-600 dark:text-dark-400">Total Ingredientes</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-yellow-400">{lowStockItems.length}</div>
-                  <div className="text-xs text-dark-400">Stock Bajo</div>
+                  <div className="text-xs text-gray-600 dark:text-dark-400">Stock Bajo</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-red-400">{criticalItems.length}</div>
-                  <div className="text-xs text-dark-400">Críticos</div>
+                  <div className="text-xs text-gray-600 dark:text-dark-400">Críticos</div>
                 </div>
               </div>
             </div>
@@ -329,22 +329,22 @@ function OpenShiftModal({ onClose, onSuccess }: any) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">Fecha</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">Fecha</label>
             <input
               type="date"
               required
-              className="w-full bg-white border-2 border-dark-600 rounded-lg px-4 py-3 text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.date}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
               Tipo de Turno
             </label>
             <select
-              className="w-full bg-white border-2 border-dark-600 rounded-lg px-4 py-3 text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value as 'AM' | 'PM' })}
             >
@@ -354,14 +354,14 @@ function OpenShiftModal({ onClose, onSuccess }: any) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
               Nombre del Empleado
             </label>
             <input
               type="text"
               required
               placeholder="Nombre completo"
-              className="w-full bg-white border-2 border-dark-600 rounded-lg px-4 py-3 text-dark-900 placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 placeholder-gray-400 dark:placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.employee_name}
               onChange={(e) => setFormData({ ...formData, employee_name: e.target.value })}
               autoComplete="off"
@@ -378,7 +378,7 @@ function OpenShiftModal({ onClose, onSuccess }: any) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 bg-dark-700 hover:bg-dark-600 text-white font-semibold rounded-lg transition-colors"
+              className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
             >
               Cancelar
             </button>
@@ -392,10 +392,10 @@ function OpenShiftModal({ onClose, onSuccess }: any) {
 function AuthorizationModal({ pendingTasks, onClose, onAuthorize }: any) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-dark-800 border-2 border-orange-600 rounded-xl p-6 w-full max-w-md">
+      <div className="bg-white dark:bg-dark-800 border-2 border-orange-600 rounded-xl p-6 w-full max-w-md shadow-lg">
         <div className="flex items-center gap-3 mb-4">
           <AlertTriangle className="w-8 h-8 text-orange-500" />
-          <h2 className="text-2xl font-bold text-white">Autorización Requerida</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Autorización Requerida</h2>
         </div>
 
         <div className="bg-orange-950 border border-orange-800 rounded-lg p-4 mb-6">
@@ -412,7 +412,7 @@ function AuthorizationModal({ pendingTasks, onClose, onAuthorize }: any) {
           </ul>
         </div>
 
-        <p className="text-dark-300 mb-6 text-sm">
+        <p className="text-gray-700 dark:text-dark-300 mb-6 text-sm">
           Como Chef/Admin, puedes autorizar el cierre del turno a pesar de las tareas pendientes.
           ¿Deseas continuar?
         </p>
@@ -426,7 +426,7 @@ function AuthorizationModal({ pendingTasks, onClose, onAuthorize }: any) {
           </button>
           <button
             onClick={onClose}
-            className="flex-1 px-6 py-3 bg-dark-700 hover:bg-dark-600 text-white font-semibold rounded-lg transition-colors"
+            className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
           >
             Cancelar
           </button>

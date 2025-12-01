@@ -32,7 +32,7 @@ export default function SalesNew() {
   };
 
   if (loading) {
-    return <div className="text-center py-12 text-dark-300">Cargando...</div>;
+    return <div className="text-center py-12 text-gray-600 dark:text-dark-300">Cargando...</div>;
   }
 
   const pizzas = recipes.filter((r) => r.type === 'pizza');
@@ -42,7 +42,7 @@ export default function SalesNew() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Registro de Ventas</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Registro de Ventas</h1>
         {currentShift && (
           <button
             onClick={() => setShowModal(true)}
@@ -55,12 +55,12 @@ export default function SalesNew() {
       </div>
 
       {!currentShift ? (
-        <div className="bg-dark-800 border border-dark-700 rounded-xl p-12 text-center">
-          <Clock className="w-20 h-20 text-dark-600 mx-auto mb-6" />
-          <h2 className="text-2xl font-bold text-white mb-3">
+        <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-12 text-center shadow-lg">
+          <Clock className="w-20 h-20 text-gray-300 dark:text-dark-600 mx-auto mb-6" />
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
             No hay turno abierto
           </h2>
-          <p className="text-dark-400 mb-8 max-w-md mx-auto">
+          <p className="text-gray-600 dark:text-dark-400 mb-8 max-w-md mx-auto">
             Debes abrir un turno antes de poder registrar ventas. ¿Deseas abrir un turno ahora?
           </p>
           <button
@@ -76,8 +76,8 @@ export default function SalesNew() {
           {/* Quick Sale Buttons */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Pizzas */}
-            <div className="bg-dark-800 border border-dark-700 rounded-xl p-6">
-              <h2 className="text-xl font-bold text-white mb-4">🍕 Pizzas</h2>
+            <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">🍕 Pizzas</h2>
               <div className="grid grid-cols-2 gap-3">
                 {pizzas.map((recipe) => (
                   <QuickSaleButton
@@ -91,8 +91,8 @@ export default function SalesNew() {
             </div>
 
             {/* Tablas */}
-            <div className="bg-dark-800 border border-dark-700 rounded-xl p-6">
-              <h2 className="text-xl font-bold text-white mb-4">🍽️ Tablas</h2>
+            <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">🍽️ Tablas</h2>
               <div className="grid grid-cols-2 gap-3">
                 {tablas.map((recipe) => (
                   <QuickSaleButton
@@ -107,27 +107,27 @@ export default function SalesNew() {
           </div>
 
           {/* Sales History */}
-          <div className="bg-dark-800 border border-dark-700 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">Ventas de Hoy</h2>
+          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Ventas de Hoy</h2>
             {sales.length > 0 ? (
               <div className="space-y-2">
                 {sales.map((sale) => (
                   <div
                     key={sale.id}
-                    className="flex justify-between items-center p-4 bg-dark-900 border border-dark-700 rounded-lg"
+                    className="flex justify-between items-center p-4 bg-gray-50 dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg"
                   >
                     <div>
-                      <p className="font-medium text-white">{sale.recipe_name}</p>
-                      <p className="text-sm text-dark-400">
+                      <p className="font-medium text-gray-900 dark:text-white">{sale.recipe_name}</p>
+                      <p className="text-sm text-gray-600 dark:text-dark-400">
                         {new Date(sale.timestamp).toLocaleTimeString('es-ES')}
                       </p>
                     </div>
-                    <span className="text-2xl font-bold text-white">×{sale.quantity}</span>
+                    <span className="text-2xl font-bold text-gray-900 dark:text-white">×{sale.quantity}</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-center text-dark-400 py-8">
+              <p className="text-center text-gray-500 dark:text-dark-400 py-8">
                 No hay ventas registradas hoy
               </p>
             )}
@@ -173,10 +173,10 @@ function QuickSaleButton({ recipe, currentShift, onSuccess }: any) {
     <button
       onClick={handleClick}
       disabled={loading}
-      className="p-4 bg-dark-900 border-2 border-dark-700 rounded-lg hover:border-orange-500 hover:bg-dark-800 transition-all disabled:opacity-50 text-left"
+      className="p-4 bg-gray-50 dark:bg-dark-900 border-2 border-gray-300 dark:border-dark-700 rounded-lg hover:border-orange-500 hover:bg-gray-100 dark:hover:bg-dark-800 transition-all disabled:opacity-50 text-left"
     >
-      <p className="font-semibold text-white">{recipe.name}</p>
-      <p className="text-xs text-dark-400 mt-1">Click para +1</p>
+      <p className="font-semibold text-gray-900 dark:text-white">{recipe.name}</p>
+      <p className="text-xs text-gray-600 dark:text-dark-400 mt-1">Click para +1</p>
     </button>
   );
 }
@@ -202,13 +202,13 @@ function SaleModal({ recipes, currentShift, onClose, onSuccess }: any) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-dark-800 border border-dark-700 rounded-xl p-6 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-white mb-6">Registrar Venta</h2>
+      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Registrar Venta</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">Receta</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">Receta</label>
             <select
-              className="w-full bg-white border-2 border-dark-600 rounded-lg px-4 py-3 text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.recipe_id}
               onChange={(e) =>
                 setFormData({ ...formData, recipe_id: parseInt(e.target.value) })
@@ -238,12 +238,12 @@ function SaleModal({ recipes, currentShift, onClose, onSuccess }: any) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">Cantidad</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">Cantidad</label>
             <input
               type="number"
               min="1"
               required
-              className="w-full bg-white border-2 border-dark-600 rounded-lg px-4 py-3 text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.quantity}
               onChange={(e) =>
                 setFormData({ ...formData, quantity: parseInt(e.target.value) })
@@ -261,7 +261,7 @@ function SaleModal({ recipes, currentShift, onClose, onSuccess }: any) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 bg-dark-700 hover:bg-dark-600 text-white font-semibold rounded-lg transition-colors"
+              className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
             >
               Cancelar
             </button>

@@ -50,13 +50,13 @@ export default function IngredientsNew() {
   const categories = [...new Set(ingredients.map((i) => i.category))];
 
   if (loading) {
-    return <div className="text-center py-12 text-dark-300">Cargando...</div>;
+    return <div className="text-center py-12 text-gray-600 dark:text-dark-300">Cargando...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Inventario Real</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Inventario Real</h1>
         <button
           onClick={() => setShowAddModal(true)}
           className="flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition-colors"
@@ -71,31 +71,31 @@ export default function IngredientsNew() {
           const categoryIngredients = ingredients.filter((i) => i.category === category);
 
           return (
-            <div key={category} className="bg-dark-800 border border-dark-700 rounded-xl p-6">
-              <h2 className="text-xl font-bold text-white mb-4 capitalize">{category}</h2>
+            <div key={category} className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 capitalize">{category}</h2>
               <div className="space-y-3">
                 {categoryIngredients.map((ingredient) => (
                   <div
                     key={ingredient.id}
-                    className="flex items-center gap-4 p-4 bg-dark-900 border border-dark-700 rounded-lg hover:border-dark-600 transition-colors"
+                    className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg hover:border-orange-500 transition-colors"
                   >
                     <div className="flex-1">
                       <div className="flex justify-between mb-2">
-                        <span className="font-medium text-lg text-white">
+                        <span className="font-medium text-lg text-gray-900 dark:text-white">
                           {ingredient.name}
                         </span>
                         <div className="text-right">
-                          <div className="text-sm font-semibold text-white">
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white">
                             {ingredient.current_quantity || Math.round((ingredient.current_percentage / 100) * (ingredient.total_quantity || 1000))}{ingredient.unit} / {ingredient.total_quantity || 1000}{ingredient.unit}
                           </div>
-                          <div className="text-xs text-dark-400">
+                          <div className="text-xs text-gray-600 dark:text-dark-400">
                             {ingredient.current_percentage}% disponible
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="flex-1">
-                          <div className="w-full bg-dark-700 rounded-full h-3 overflow-hidden">
+                          <div className="w-full bg-gray-200 dark:bg-dark-700 rounded-full h-3 overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all ${getPercentageColor(
                                 ingredient.current_percentage,
@@ -191,24 +191,24 @@ function AddIngredientModal({ onClose, onSuccess }: any) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-dark-800 border border-dark-700 rounded-xl p-6 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-white mb-6">Nuevo Ingrediente</h2>
+      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Nuevo Ingrediente</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">Nombre</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">Nombre</label>
             <input
               type="text"
               required
-              className="w-full bg-white border-2 border-dark-600 rounded-lg px-4 py-3 text-dark-900 placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 placeholder-gray-400 dark:placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               autoComplete="off"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">Unidad de Medida</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">Unidad de Medida</label>
             <select
-              className="w-full bg-white border-2 border-dark-600 rounded-lg px-4 py-3 text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.unit}
               onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
             >
@@ -228,12 +228,12 @@ function AddIngredientModal({ onClose, onSuccess }: any) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">Categoría</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">Categoría</label>
             <input
               type="text"
               required
               placeholder="proteínas, vegetales, lácteos, etc."
-              className="w-full bg-white border-2 border-dark-600 rounded-lg px-4 py-3 text-dark-900 placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 placeholder-gray-400 dark:placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               autoComplete="off"
@@ -241,14 +241,14 @@ function AddIngredientModal({ onClose, onSuccess }: any) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-dark-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
                 Umbral Crítico (%)
               </label>
               <input
                 type="number"
                 min="0"
                 max="100"
-                className="w-full bg-white border-2 border-dark-600 rounded-lg px-4 py-3 text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+                className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
                 value={formData.critical_threshold}
                 onChange={(e) =>
                   setFormData({ ...formData, critical_threshold: parseInt(e.target.value) })
@@ -256,14 +256,14 @@ function AddIngredientModal({ onClose, onSuccess }: any) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-dark-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
                 Umbral Advertencia (%)
               </label>
               <input
                 type="number"
                 min="0"
                 max="100"
-                className="w-full bg-white border-2 border-dark-600 rounded-lg px-4 py-3 text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+                className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
                 value={formData.warning_threshold}
                 onChange={(e) =>
                   setFormData({ ...formData, warning_threshold: parseInt(e.target.value) })
@@ -281,7 +281,7 @@ function AddIngredientModal({ onClose, onSuccess }: any) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 bg-dark-700 hover:bg-dark-600 text-white font-semibold rounded-lg transition-colors"
+              className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
             >
               Cancelar
             </button>
@@ -311,17 +311,17 @@ function RestockModal({ ingredient, onClose, onSuccess }: any) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-dark-800 border border-dark-700 rounded-xl p-6 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-white mb-4">
+      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
           Restoquear: {ingredient.name}
         </h2>
-        <div className="mb-6 p-4 bg-dark-900 rounded-lg">
-          <p className="text-sm text-dark-400">Nivel actual</p>
-          <p className="text-3xl font-bold text-white">{ingredient.current_percentage}%</p>
+        <div className="mb-6 p-4 bg-gray-100 dark:bg-dark-900 rounded-lg">
+          <p className="text-sm text-gray-600 dark:text-dark-400">Nivel actual</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">{ingredient.current_percentage}%</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
               Nuevo Porcentaje
             </label>
             <input
@@ -329,20 +329,20 @@ function RestockModal({ ingredient, onClose, onSuccess }: any) {
               min="0"
               max="100"
               required
-              className="w-full bg-white border-2 border-dark-600 rounded-lg px-4 py-3 text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={newPercentage}
               onChange={(e) => setNewPercentage(parseInt(e.target.value))}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
               Autorizado por
             </label>
             <input
               type="text"
               required
               placeholder="Nombre del encargado"
-              className="w-full bg-white border-2 border-dark-600 rounded-lg px-4 py-3 text-dark-900 placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 placeholder-gray-400 dark:placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={authorizedBy}
               onChange={(e) => setAuthorizedBy(e.target.value)}
               autoComplete="off"
@@ -358,7 +358,7 @@ function RestockModal({ ingredient, onClose, onSuccess }: any) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 bg-dark-700 hover:bg-dark-600 text-white font-semibold rounded-lg transition-colors"
+              className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
             >
               Cancelar
             </button>
