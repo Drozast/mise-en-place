@@ -79,12 +79,12 @@ export default function IngredientsNew() {
 
       {/* Sección Masas Disponibles */}
       {masas.length > 0 && (
-        <div className="bg-dark-900/90 dark:bg-dark-800/90 border border-gray-700/50 dark:border-dark-700 rounded-xl p-6">
+        <div className="bg-white dark:bg-dark-800/90 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
               🍕 Masas Disponibles
             </h2>
-            <button className="px-4 py-2 text-sm text-gray-400 hover:text-white border border-gray-700 hover:border-gray-600 rounded-lg transition-colors">
+            <button className="px-4 py-2 text-sm text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 rounded-lg transition-colors">
               Lunes
             </button>
           </div>
@@ -93,11 +93,11 @@ export default function IngredientsNew() {
             {masas.map((masa) => {
               const cantidad = masa.current_quantity || Math.round((masa.current_percentage / 100) * (masa.total_quantity || 20));
               return (
-                <div key={masa.id} className="bg-dark-800/50 border border-gray-700/50 rounded-lg p-6 text-center">
-                  <div className="text-5xl font-bold text-green-400 mb-2">
+                <div key={masa.id} className="bg-gray-50 dark:bg-dark-800/50 border border-gray-200 dark:border-gray-700/50 rounded-lg p-6 text-center">
+                  <div className="text-5xl font-bold text-green-600 dark:text-green-400 mb-2">
                     {cantidad}
                   </div>
-                  <div className="text-gray-400 text-sm">
+                  <div className="text-gray-700 dark:text-gray-400 text-sm">
                     {masa.name}
                   </div>
                 </div>
@@ -105,9 +105,9 @@ export default function IngredientsNew() {
             })}
           </div>
 
-          <div className="flex justify-between items-center pt-4 border-t border-gray-700/50">
-            <span className="text-gray-400">Total disponibles</span>
-            <span className="text-xl font-bold text-white">
+          <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700/50">
+            <span className="text-gray-700 dark:text-gray-400">Total disponibles</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">
               {totalMasasDisponibles} / {totalMasasCapacidad}
             </span>
           </div>
@@ -118,7 +118,7 @@ export default function IngredientsNew() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Inventario Actual</h2>
-          <button className="px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors">
+          <button className="px-4 py-2 text-sm bg-gray-700 dark:bg-gray-700 hover:bg-gray-600 dark:hover:bg-gray-600 text-white rounded-lg transition-colors">
             Editar Manual
           </button>
         </div>
@@ -133,30 +133,30 @@ export default function IngredientsNew() {
                 {categoryIngredients.map((ingredient) => (
                   <div
                     key={ingredient.id}
-                    className="bg-dark-900/80 dark:bg-dark-800/80 border border-gray-700/50 dark:border-dark-700 rounded-lg p-4 hover:border-orange-500/50 transition-colors"
+                    className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-700 rounded-lg p-4 hover:border-orange-500 dark:hover:border-orange-500/50 transition-colors shadow-sm"
                   >
                     <div className="flex justify-between items-start mb-3">
-                      <span className="font-semibold text-sm text-white">
+                      <span className="font-semibold text-sm text-gray-900 dark:text-white">
                         {ingredient.name}
                       </span>
                       <button
                         onClick={() => handleRestock(ingredient)}
-                        className="text-gray-400 hover:text-white"
+                        className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                       >
                         <RefreshCw className="w-4 h-4" />
                       </button>
                     </div>
 
                     <div className="mb-3">
-                      <div className="text-xs text-gray-400 mb-1">
+                      <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
                         {ingredient.current_quantity || Math.round((ingredient.current_percentage / 100) * (ingredient.total_quantity || 1000))}{ingredient.unit} / {ingredient.total_quantity || 1000}{ingredient.unit}
                       </div>
-                      <div className="text-2xl font-bold text-green-400">
+                      <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                         {ingredient.current_percentage}%
                       </div>
                     </div>
 
-                    <div className="w-full bg-gray-800 dark:bg-dark-700 rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-gray-200 dark:bg-dark-700 rounded-full h-2 overflow-hidden">
                       <div
                         className={`h-2 rounded-full transition-all ${getPercentageColor(
                           ingredient.current_percentage,

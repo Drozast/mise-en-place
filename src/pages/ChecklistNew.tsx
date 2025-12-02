@@ -92,40 +92,40 @@ export default function ChecklistNew() {
   return (
     <div className="space-y-6">
       {/* Header Card */}
-      <div className="bg-dark-900/90 dark:bg-dark-800/90 border border-gray-700/50 rounded-2xl p-6 shadow-xl">
+      <div className="bg-white dark:bg-dark-800/90 border border-gray-200 dark:border-dark-700/50 rounded-2xl p-6 shadow-xl">
         <div className="flex justify-between items-start mb-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="bg-orange-600/20 p-2 rounded-lg">
-                <Check className="w-6 h-6 text-orange-400" />
+              <div className="bg-orange-100 dark:bg-orange-600/20 p-2 rounded-lg">
+                <Check className="w-6 h-6 text-orange-600 dark:text-orange-400" />
               </div>
-              <h1 className="text-3xl font-bold text-white">Checklist</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Checklist</h1>
             </div>
-            <p className="text-gray-400">Protocolo de cocina - Pizzería Di Lauvice</p>
+            <p className="text-gray-600 dark:text-gray-400">Protocolo de cocina - Pizzería Di Lauvice</p>
           </div>
           <div className="text-right">
-            <div className="text-4xl font-bold text-orange-400 mb-1">
+            <div className="text-4xl font-bold text-orange-600 dark:text-orange-400 mb-1">
               {completedTasks}/{totalTasks}
             </div>
-            <div className="text-sm text-gray-400">Tareas completadas</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Tareas completadas</div>
           </div>
         </div>
 
         {/* Turno Selector */}
-        <div className="bg-orange-900/30 border border-orange-600/30 rounded-lg p-4 mb-4 flex items-center justify-center gap-2">
-          <Clock className="w-5 h-5 text-orange-400" />
-          <span className="text-orange-400 font-semibold">Turno {turno}</span>
+        <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-600/30 rounded-lg p-4 mb-4 flex items-center justify-center gap-2">
+          <Clock className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+          <span className="text-orange-600 dark:text-orange-400 font-semibold">Turno {turno}</span>
         </div>
 
         {/* Progress Bar */}
         <div className="mb-4">
-          <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
+          <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-3 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-orange-600 via-yellow-500 to-green-500"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
-          <div className="text-center text-white font-semibold mt-2">
+          <div className="text-center text-gray-900 dark:text-white font-semibold mt-2">
             {progressPercentage}% completado
           </div>
         </div>
@@ -149,17 +149,17 @@ export default function ChecklistNew() {
           return (
             <div
               key={section.title}
-              className="bg-dark-900/80 dark:bg-dark-800/80 border border-gray-700/50 rounded-xl p-6"
+              className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-700/50 rounded-xl p-6 shadow-lg"
             >
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-orange-400">{section.title}</h2>
-                <span className="text-white font-semibold">
+                <h2 className="text-xl font-bold text-orange-600 dark:text-orange-400">{section.title}</h2>
+                <span className="text-gray-900 dark:text-white font-semibold">
                   {sectionCompleted}/{sectionTotal}
                 </span>
               </div>
 
               {/* Section Progress Bar */}
-              <div className="w-full bg-gray-800 rounded-full h-2 mb-4 overflow-hidden">
+              <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2 mb-4 overflow-hidden">
                 <div
                   className="h-full rounded-full bg-orange-600 transition-all duration-300"
                   style={{ width: `${sectionProgress}%` }}
@@ -174,8 +174,8 @@ export default function ChecklistNew() {
                     onClick={() => toggleItem(sectionIndex, item.id)}
                     className={`w-full flex items-center gap-4 p-4 rounded-lg border transition-all ${
                       item.completed
-                        ? 'bg-green-900/20 border-green-600/30 text-gray-400'
-                        : 'bg-dark-800/50 border-gray-700/50 text-white hover:border-orange-500/50'
+                        ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-600/30 text-gray-500 dark:text-gray-400'
+                        : 'bg-gray-50 dark:bg-dark-800/50 border-gray-200 dark:border-gray-700/50 text-gray-900 dark:text-white hover:border-orange-500 dark:hover:border-orange-500/50'
                     }`}
                   >
                     <div
