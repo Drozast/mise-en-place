@@ -8,6 +8,7 @@ import RecipesNew from './pages/RecipesNew';
 import IngredientsNew from './pages/IngredientsNew';
 import ReportsNew from './pages/ReportsNew';
 import ShiftsNew from './pages/ShiftsNew';
+import ChecklistNew from './pages/ChecklistNew';
 import Users from './pages/Users';
 import RewardsNew from './pages/RewardsNew';
 
@@ -44,7 +45,7 @@ function App() {
           <Route path="pizzas" element={<RecipesNew />} />
           <Route path="inventario" element={<IngredientsNew />} />
           <Route path="lista-compras" element={<ReportsNew />} />
-          <Route path="checklist" element={<ShiftsNew />} />
+          <Route path="checklist" element={<ChecklistNew />} />
           <Route path="premios" element={<RewardsNew />} />
           <Route path="usuarios" element={<Users />} />
         </Route>
