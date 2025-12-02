@@ -233,7 +233,7 @@ function RewardModal({ reward, onClose, onSuccess, userName }: RewardModalProps)
               type="text"
               required
               placeholder="Ej: 2 Pizzas Familiares"
-              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 placeholder-gray-400 dark:placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-dark-500 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               autoComplete="off"
@@ -248,7 +248,7 @@ function RewardModal({ reward, onClose, onSuccess, userName }: RewardModalProps)
               required
               rows={3}
               placeholder="Describe el premio y cómo ganarlo"
-              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 placeholder-gray-400 dark:placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium resize-none"
+              className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-dark-500 focus:outline-none focus:border-orange-500 transition-colors font-medium resize-none"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
