@@ -211,16 +211,51 @@ const initialize = () => {
     )
   `);
 
+  // Migración: Recrear tabla recipes sin UNIQUE constraint en name
+  try {
+    // Verificar si necesitamos migrar
+    const tableInfo = sqlite.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='recipes'").get() as any;
+
+    if (tableInfo && tableInfo.sql.includes('name TEXT NOT NULL UNIQUE')) {
+      console.log('🔄 Migrando tabla recipes para permitir nombres duplicados con diferentes tamaños...');
+
+      // Backup de datos existentes
+      sqlite.exec(`
+        CREATE TABLE IF NOT EXISTS recipes_backup AS SELECT * FROM recipes;
+        DROP TABLE recipes;
+
+        CREATE TABLE recipes (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          type TEXT NOT NULL CHECK(type IN ('pizza', 'tabla')),
+          size TEXT CHECK(size IN ('S', 'M', 'L')),
+          active INTEGER DEFAULT 1,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(name, size, type)
+        );
+
+        INSERT INTO recipes (id, name, type, active, created_at)
+        SELECT id, name, type, active, created_at FROM recipes_backup;
+
+        DROP TABLE recipes_backup;
+      `);
+
+      console.log('✅ Tabla recipes migrada correctamente');
+    }
+  } catch (error) {
+    console.error('Error en migración de recipes:', error);
+  }
+
   // Migración: Agregar size a recipes si no existe
   try {
     const columns = sqlite.pragma('table_info(recipes)');
     const hasSize = columns.some((col: any) => col.name === 'size');
     if (!hasSize) {
-      sqlite.exec(`ALTER TABLE recipes ADD COLUMN size TEXT CHECK(size IN ('S', 'M', 'L')) DEFAULT 'M'`);
+      sqlite.exec(`ALTER TABLE recipes ADD COLUMN size TEXT CHECK(size IN ('S', 'M', 'L'))`);
       console.log('✅ Campo size agregado a la tabla recipes');
     }
   } catch (error) {
-    console.error('Error en migración de size:', error);
+    console.error('Error agregando size:', error);
   }
 
   // Migración: Agregar total_quantity si no existe
