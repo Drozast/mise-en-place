@@ -21,9 +21,16 @@ export default function DashboardNew() {
     M: { count: 0, disponibles: 6 },
     S: { count: 0, disponibles: 4 },
   });
+  const [miseEnPlace, setMiseEnPlace] = useState<any[]>([]);
+  const [loadingMise, setLoadingMise] = useState(true);
 
   useEffect(() => {
     loadData();
+    loadMiseEnPlace();
+
+    // Refresh mise en place every 10 seconds
+    const interval = setInterval(loadMiseEnPlace, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const loadData = async () => {
@@ -63,6 +70,43 @@ export default function DashboardNew() {
       });
     } catch (error) {
       console.error('Error cargando datos:', error);
+    }
+  };
+
+  const loadMiseEnPlace = async () => {
+    try {
+      const response = await fetch('/api/shifts/current/mise-en-place');
+      if (response.ok) {
+        const data = await response.json();
+        setMiseEnPlace(data.mise_en_place || []);
+      } else {
+        setMiseEnPlace([]);
+      }
+    } catch (error) {
+      console.error('Error cargando mise en place:', error);
+      setMiseEnPlace([]);
+    } finally {
+      setLoadingMise(false);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'green': return 'bg-green-500';
+      case 'yellow': return 'bg-yellow-500';
+      case 'orange': return 'bg-orange-500';
+      case 'red': return 'bg-red-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'green': return 'Óptimo';
+      case 'yellow': return 'Atención';
+      case 'orange': return 'Urgente';
+      case 'red': return 'Crítico';
+      default: return 'Desconocido';
     }
   };
 
@@ -240,6 +284,69 @@ export default function DashboardNew() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Mise en Place en Tiempo Real */}
+      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          <Package className="w-5 h-5 text-orange-500" />
+          Mise en Place del Turno Actual
+          <span className="ml-auto text-xs text-gray-500 dark:text-dark-500">
+            Actualización automática cada 10s
+          </span>
+        </h3>
+
+        {loadingMise ? (
+          <div className="text-center py-8 text-gray-500 dark:text-dark-400">
+            Cargando mise en place...
+          </div>
+        ) : miseEnPlace.length === 0 ? (
+          <div className="text-center py-8 text-gray-500 dark:text-dark-400">
+            No hay turno abierto. Abre un turno para ver el mise en place.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {miseEnPlace.map((item: any) => (
+              <div
+                key={item.id}
+                className="bg-gray-100 dark:bg-dark-700 rounded-lg p-4 border-l-4 transition-all hover:scale-102"
+                style={{ borderLeftColor: item.status === 'green' ? '#22c55e' : item.status === 'yellow' ? '#eab308' : item.status === 'orange' ? '#f97316' : '#ef4444' }}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
+                      {item.ingredient_name}
+                    </h4>
+                    <p className="text-xs text-gray-600 dark:text-dark-400 mt-1">
+                      {Math.round(item.current_quantity)} / {Math.round(item.initial_quantity)} {item.unit}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className={`text-xs font-semibold px-2 py-1 rounded ${
+                      item.status === 'green' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                      item.status === 'yellow' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                      item.status === 'orange' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
+                      'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                    }`}>
+                      {getStatusText(item.status)}
+                    </span>
+                    <span className="text-xl font-bold text-gray-900 dark:text-white">
+                      {item.percentage}%
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <div className="w-full bg-gray-300 dark:bg-dark-600 rounded-full h-2 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${getStatusColor(item.status)}`}
+                      style={{ width: `${Math.min(100, item.percentage)}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
