@@ -73,7 +73,7 @@ export default function DashboardNew() {
         {/* Total Ventas */}
         <div
           onClick={() => navigate('/ventas')}
-          className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
+          className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
         >
           <div className="flex items-start justify-between mb-4">
             <div className="text-sm text-gray-600 dark:text-dark-400 group-hover:text-orange-400 transition-colors">Total Ventas</div>
@@ -88,7 +88,7 @@ export default function DashboardNew() {
         {/* Masas Usadas */}
         <div
           onClick={() => navigate('/pizzas')}
-          className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
+          className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
         >
           <div className="flex items-start justify-between mb-4">
             <div className="text-sm text-gray-600 dark:text-dark-400 group-hover:text-orange-400 transition-colors">Masas Usadas</div>
@@ -107,7 +107,7 @@ export default function DashboardNew() {
         {/* Alertas Activas */}
         <div
           onClick={() => navigate('/lista-compras')}
-          className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
+          className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
         >
           <div className="flex items-start justify-between mb-4">
             <div className="text-sm text-gray-600 dark:text-dark-400 group-hover:text-orange-400 transition-colors">Alertas Activas</div>
@@ -124,7 +124,7 @@ export default function DashboardNew() {
         {/* Estado Inventario */}
         <div
           onClick={() => navigate('/inventario')}
-          className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
+          className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
         >
           <div className="flex items-start justify-between mb-4">
             <div className="text-sm text-gray-600 dark:text-dark-400 group-hover:text-orange-400 transition-colors">Estado Inventario</div>
@@ -139,14 +139,14 @@ export default function DashboardNew() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Ventas por Pizza */}
-        <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6">
+        <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Ventas por Pizza</h3>
           <div className="space-y-3">
             {ventasPorPizza.length > 0 ? (
               ventasPorPizza.map((pizza, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-dark-700 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-gray-100 dark:bg-dark-700 rounded-lg"
                 >
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">{pizza.name}</p>
@@ -164,7 +164,7 @@ export default function DashboardNew() {
         </div>
 
         {/* Distribución por Tamaño */}
-        <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6">
+        <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Distribución por Tamaño</h3>
           <div className="space-y-4">
             {/* Tamaño L */}
