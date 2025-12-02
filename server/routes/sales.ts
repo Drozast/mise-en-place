@@ -46,36 +46,74 @@ router.post('/', (req: Request, res: Response) => {
   try {
     const { shift_id, recipe_id, quantity } = req.body;
 
-    // Get recipe ingredients
+    // Get recipe ingredients with their quantities
     const recipeIngredients = db.sqlite.prepare(`
-      SELECT ri.*, i.name, i.unit, i.current_percentage
+      SELECT ri.*, i.name, i.unit
       FROM recipe_ingredients ri
       JOIN ingredients i ON ri.ingredient_id = i.id
       WHERE ri.recipe_id = ?
     `).all(recipe_id) as any[];
 
-    // Calculate percentage decrease for each ingredient
-    // Assuming each recipe uses a certain percentage of the total capacity
-    const updates: { id: number; newPercentage: number }[] = [];
-
-    for (const ing of recipeIngredients) {
-      // This is a simplified calculation
-      // You might want to adjust based on actual capacity/units
-      const percentageDecrease = ing.quantity * quantity;
-      const newPercentage = Math.max(0, ing.current_percentage - percentageDecrease);
-
-      updates.push({ id: ing.ingredient_id, newPercentage });
-    }
-
-    // Update ingredients in a transaction
-    const updateStmt = db.sqlite.prepare(`
-      UPDATE ingredients
-      SET current_percentage = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
+    // Update mise en place for current shift (deduct ingredients)
+    const updateMiseStmt = db.sqlite.prepare(`
+      UPDATE shift_mise_en_place
+      SET current_quantity = current_quantity - ?,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE shift_id = ? AND ingredient_id = ?
     `);
 
-    for (const update of updates) {
-      updateStmt.run(update.newPercentage, update.id);
+    const io = req.app.get('io');
+
+    for (const ing of recipeIngredients) {
+      const totalDeduction = ing.quantity * quantity;
+      updateMiseStmt.run(totalDeduction, shift_id, ing.ingredient_id);
+
+      // Get updated mise en place status
+      const updatedMise = db.sqlite.prepare(`
+        SELECT
+          smp.*,
+          i.name as ingredient_name,
+          (smp.current_quantity * 100.0 / smp.initial_quantity) as percentage
+        FROM shift_mise_en_place smp
+        JOIN ingredients i ON smp.ingredient_id = i.id
+        WHERE smp.shift_id = ? AND smp.ingredient_id = ?
+      `).get(shift_id, ing.ingredient_id) as any;
+
+      if (updatedMise) {
+        // Add color status
+        let status = 'green';
+        if (updatedMise.percentage < 30) status = 'red';
+        else if (updatedMise.percentage < 50) status = 'orange';
+        else if (updatedMise.percentage < 70) status = 'yellow';
+
+        updatedMise.status = status;
+        updatedMise.percentage = Math.round(updatedMise.percentage);
+
+        // Emit real-time update
+        io.emit('mise:updated', updatedMise);
+
+        // Create alert if needed
+        if (updatedMise.percentage <= 50) {
+          const alertType = updatedMise.percentage <= 30 ? 'critical' : 'warning';
+          const message = `${updatedMise.ingredient_name} está al ${updatedMise.percentage}% en el mise en place`;
+
+          const existingAlert = db.sqlite.prepare(`
+            SELECT * FROM alerts
+            WHERE ingredient_id = ? AND resolved = 0 AND message LIKE ?
+          `).get(ing.ingredient_id, `%${updatedMise.percentage}%`);
+
+          if (!existingAlert) {
+            const alertStmt = db.sqlite.prepare(`
+              INSERT INTO alerts (type, message, ingredient_id, priority)
+              VALUES (?, ?, ?, ?)
+            `);
+            const priority = alertType === 'critical' ? 3 : 2;
+            const alertResult = alertStmt.run(alertType, message, ing.ingredient_id, priority);
+            const newAlert = db.sqlite.prepare('SELECT * FROM alerts WHERE id = ?').get(alertResult.lastInsertRowid);
+            io.emit('alert:created', newAlert);
+          }
+        }
+      }
     }
 
     // Register sale
@@ -93,20 +131,11 @@ router.post('/', (req: Request, res: Response) => {
       WHERE s.id = ?
     `).get(result.lastInsertRowid);
 
-    // Check for alerts on updated ingredients
-    const io = req.app.get('io');
-
-    for (const update of updates) {
-      const ingredient = db.sqlite.prepare('SELECT * FROM ingredients WHERE id = ?').get(update.id) as Ingredient;
-      checkAndCreateAlert(ingredient, io);
-      io.emit('ingredient:updated', ingredient);
-    }
-
     io.emit('sale:registered', newSale);
 
     res.status(201).json(newSale);
   } catch (error) {
-    console.error(error);
+    console.error('Error registering sale:', error);
     res.status(500).json({ error: 'Error al registrar venta' });
   }
 });

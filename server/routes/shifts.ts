@@ -85,7 +85,7 @@ router.get('/current', (req: Request, res: Response) => {
 // POST create shift
 router.post('/', (req: Request, res: Response) => {
   try {
-    const { date, type, employee_name } = req.body;
+    const { date, type, employee_name, mise_en_place } = req.body;
 
     // Check if there's already an open shift
     const openShift = db.sqlite.prepare('SELECT * FROM shifts WHERE status = ?').get('open');
@@ -113,10 +113,29 @@ router.post('/', (req: Request, res: Response) => {
       taskStmt.run(shiftId, task);
     }
 
+    // Initialize mise en place for this shift
+    if (mise_en_place && Array.isArray(mise_en_place)) {
+      const miseStmt = db.sqlite.prepare(`
+        INSERT INTO shift_mise_en_place (shift_id, ingredient_id, initial_quantity, current_quantity, unit)
+        VALUES (?, ?, ?, ?, ?)
+      `);
+
+      for (const item of mise_en_place) {
+        miseStmt.run(
+          shiftId,
+          item.ingredient_id,
+          item.quantity,
+          item.quantity,
+          item.unit
+        );
+      }
+    }
+
     const newShift = db.sqlite.prepare('SELECT * FROM shifts WHERE id = ?').get(shiftId);
     const shiftTasks = db.sqlite.prepare('SELECT * FROM shift_tasks WHERE shift_id = ?').all(shiftId);
+    const shiftMise = db.sqlite.prepare('SELECT * FROM shift_mise_en_place WHERE shift_id = ?').all(shiftId);
 
-    const completeShift = { ...newShift, tasks: shiftTasks };
+    const completeShift = { ...newShift, tasks: shiftTasks, mise_en_place: shiftMise };
 
     // Emit update via socket
     const io = req.app.get('io');
@@ -124,6 +143,7 @@ router.post('/', (req: Request, res: Response) => {
 
     res.status(201).json(completeShift);
   } catch (error) {
+    console.error('Error creating shift:', error);
     res.status(500).json({ error: 'Error al crear turno' });
   }
 });
@@ -144,16 +164,33 @@ router.put('/:id/close', (req: Request, res: Response) => {
       return res.status(400).json({ error: 'El turno ya está cerrado' });
     }
 
-    // Check critical ingredients
-    const criticalIngredients = db.sqlite.prepare(`
-      SELECT * FROM ingredients
-      WHERE current_percentage < critical_threshold
-    `).all();
+    // Get mise en place settings
+    const settings = db.sqlite.prepare('SELECT * FROM mise_en_place_settings LIMIT 1').get() as any;
+    const minClosePercentage = settings?.min_close_percentage || 80;
 
-    if (criticalIngredients.length > 0) {
+    // Check mise en place levels for this shift
+    const miseEnPlace = db.sqlite.prepare(`
+      SELECT
+        smp.*,
+        i.name as ingredient_name,
+        (smp.current_quantity * 100.0 / smp.initial_quantity) as percentage
+      FROM shift_mise_en_place smp
+      JOIN ingredients i ON smp.ingredient_id = i.id
+      WHERE smp.shift_id = ?
+    `).all(id) as any[];
+
+    const lowIngredients = miseEnPlace.filter((item: any) => item.percentage < minClosePercentage);
+
+    if (lowIngredients.length > 0) {
       return res.status(400).json({
-        error: 'No puedes cerrar el turno. Hay ingredientes en nivel crítico.',
-        critical_ingredients: criticalIngredients
+        error: `No puedes cerrar el turno. Los siguientes ingredientes están por debajo del ${minClosePercentage}%:`,
+        low_ingredients: lowIngredients.map((item: any) => ({
+          name: item.ingredient_name,
+          percentage: Math.round(item.percentage),
+          current: item.current_quantity,
+          initial: item.initial_quantity,
+          unit: item.unit
+        }))
       });
     }
 
@@ -179,6 +216,7 @@ router.put('/:id/close', (req: Request, res: Response) => {
 
     res.json(completeShift);
   } catch (error) {
+    console.error('Error closing shift:', error);
     res.status(500).json({ error: 'Error al cerrar turno' });
   }
 });
@@ -206,6 +244,150 @@ router.put('/:shiftId/tasks/:taskId', (req: Request, res: Response) => {
     res.json(updated);
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar tarea' });
+  }
+});
+
+// GET mise en place status for current shift
+router.get('/current/mise-en-place', (req: Request, res: Response) => {
+  try {
+    const shift = db.sqlite.prepare(`
+      SELECT * FROM shifts
+      WHERE status = 'open'
+      ORDER BY start_time DESC
+      LIMIT 1
+    `).get() as any;
+
+    if (!shift) {
+      return res.status(404).json({ error: 'No hay turno abierto' });
+    }
+
+    const miseEnPlace = db.sqlite.prepare(`
+      SELECT
+        smp.*,
+        i.name as ingredient_name,
+        i.category,
+        (smp.current_quantity * 100.0 / smp.initial_quantity) as percentage
+      FROM shift_mise_en_place smp
+      JOIN ingredients i ON smp.ingredient_id = i.id
+      WHERE smp.shift_id = ?
+      ORDER BY i.category, i.name
+    `).all(shift.id);
+
+    // Add color status based on percentage
+    const miseWithStatus = (miseEnPlace as any[]).map((item: any) => {
+      let status = 'green';
+      if (item.percentage < 30) status = 'red';
+      else if (item.percentage < 50) status = 'orange';
+      else if (item.percentage < 70) status = 'yellow';
+
+      return {
+        ...item,
+        status,
+        percentage: Math.round(item.percentage)
+      };
+    });
+
+    res.json({
+      shift_id: shift.id,
+      mise_en_place: miseWithStatus
+    });
+  } catch (error) {
+    console.error('Error getting mise en place status:', error);
+    res.status(500).json({ error: 'Error al obtener estado del mise en place' });
+  }
+});
+
+// POST calculate initial mise en place based on settings
+router.post('/calculate-mise-en-place', (req: Request, res: Response) => {
+  try {
+    // Get settings
+    const settings = db.sqlite.prepare('SELECT * FROM mise_en_place_settings LIMIT 1').get() as any;
+    const basePizzaCount = settings?.base_pizza_count || 20;
+
+    // Get all recipes with their ingredients
+    const recipes = db.sqlite.prepare(`
+      SELECT r.*, ri.ingredient_id, ri.quantity, i.name as ingredient_name, i.unit
+      FROM recipes r
+      JOIN recipe_ingredients ri ON r.id = ri.recipe_id
+      JOIN ingredients i ON ri.ingredient_id = i.id
+      WHERE r.active = 1 AND r.type = 'pizza'
+    `).all() as any[];
+
+    // Group by ingredient and sum quantities for base pizza count
+    const ingredientMap = new Map<number, any>();
+
+    for (const recipe of recipes) {
+      const qty = recipe.quantity * basePizzaCount / recipes.length; // Distribute evenly among all pizzas
+
+      if (ingredientMap.has(recipe.ingredient_id)) {
+        const existing = ingredientMap.get(recipe.ingredient_id);
+        existing.quantity += qty;
+      } else {
+        ingredientMap.set(recipe.ingredient_id, {
+          ingredient_id: recipe.ingredient_id,
+          ingredient_name: recipe.ingredient_name,
+          quantity: qty,
+          unit: recipe.unit
+        });
+      }
+    }
+
+    const calculatedMiseEnPlace = Array.from(ingredientMap.values());
+
+    res.json({
+      base_pizza_count: basePizzaCount,
+      mise_en_place: calculatedMiseEnPlace
+    });
+  } catch (error) {
+    console.error('Error calculating mise en place:', error);
+    res.status(500).json({ error: 'Error al calcular mise en place' });
+  }
+});
+
+// PUT restock ingredient in current shift
+router.put('/current/mise-en-place/:ingredientId/restock', (req: Request, res: Response) => {
+  try {
+    const { ingredientId } = req.params;
+    const { quantity } = req.body;
+
+    const shift = db.sqlite.prepare(`
+      SELECT * FROM shifts
+      WHERE status = 'open'
+      ORDER BY start_time DESC
+      LIMIT 1
+    `).get() as any;
+
+    if (!shift) {
+      return res.status(404).json({ error: 'No hay turno abierto' });
+    }
+
+    const stmt = db.sqlite.prepare(`
+      UPDATE shift_mise_en_place
+      SET current_quantity = current_quantity + ?,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE shift_id = ? AND ingredient_id = ?
+    `);
+
+    stmt.run(quantity, shift.id, ingredientId);
+
+    const updated = db.sqlite.prepare(`
+      SELECT
+        smp.*,
+        i.name as ingredient_name,
+        (smp.current_quantity * 100.0 / smp.initial_quantity) as percentage
+      FROM shift_mise_en_place smp
+      JOIN ingredients i ON smp.ingredient_id = i.id
+      WHERE smp.shift_id = ? AND smp.ingredient_id = ?
+    `).get(shift.id, ingredientId);
+
+    // Emit update via socket
+    const io = req.app.get('io');
+    io.emit('mise:updated', updated);
+
+    res.json(updated);
+  } catch (error) {
+    console.error('Error restocking ingredient:', error);
+    res.status(500).json({ error: 'Error al reponer ingrediente' });
   }
 });
 

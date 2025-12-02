@@ -172,6 +172,57 @@ const initialize = () => {
     )
   `);
 
+  // Tabla de configuración de mise en place
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS mise_en_place_settings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      base_pizza_count INTEGER DEFAULT 20,
+      size_l_percentage INTEGER DEFAULT 60,
+      size_m_percentage INTEGER DEFAULT 25,
+      size_s_percentage INTEGER DEFAULT 15,
+      min_close_percentage INTEGER DEFAULT 80,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Insertar configuración por defecto si no existe
+  const settingsExists = sqlite.prepare('SELECT * FROM mise_en_place_settings').get();
+  if (!settingsExists) {
+    sqlite.prepare(`
+      INSERT INTO mise_en_place_settings (base_pizza_count, size_l_percentage, size_m_percentage, size_s_percentage, min_close_percentage)
+      VALUES (20, 60, 25, 15, 80)
+    `).run();
+  }
+
+  // Tabla de mise en place por turno (snapshot inicial del turno)
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS shift_mise_en_place (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      shift_id INTEGER NOT NULL,
+      ingredient_id INTEGER NOT NULL,
+      initial_quantity REAL NOT NULL,
+      current_quantity REAL NOT NULL,
+      unit TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (shift_id) REFERENCES shifts(id) ON DELETE CASCADE,
+      FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE CASCADE,
+      UNIQUE(shift_id, ingredient_id)
+    )
+  `);
+
+  // Migración: Agregar size a recipes si no existe
+  try {
+    const columns = sqlite.pragma('table_info(recipes)');
+    const hasSize = columns.some((col: any) => col.name === 'size');
+    if (!hasSize) {
+      sqlite.exec(`ALTER TABLE recipes ADD COLUMN size TEXT CHECK(size IN ('S', 'M', 'L')) DEFAULT 'M'`);
+      console.log('✅ Campo size agregado a la tabla recipes');
+    }
+  } catch (error) {
+    console.error('Error en migración de size:', error);
+  }
+
   // Migración: Agregar total_quantity si no existe
   try {
     const columns = sqlite.pragma('table_info(ingredients)');
