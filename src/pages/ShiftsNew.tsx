@@ -241,149 +241,197 @@ function OpenShiftModal({ onClose, onSuccess }: any) {
     type: 'AM' as 'AM' | 'PM',
     employee_name: '',
   });
-  const [ingredients, setIngredients] = useState<any[]>([]);
+  const [miseEnPlace, setMiseEnPlace] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [step, setStep] = useState(1); // 1: form, 2: mise en place
   const user = useStore((state) => state.user);
 
   useEffect(() => {
-    loadIngredients();
+    loadMiseEnPlaceCalculation();
   }, []);
 
-  const loadIngredients = async () => {
+  const loadMiseEnPlaceCalculation = async () => {
     try {
-      const data = await api.ingredients.getAll();
-      setIngredients(data);
+      const response = await fetch('/api/shifts/calculate-mise-en-place', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        setMiseEnPlace(data.mise_en_place || []);
+      } else {
+        console.error('Error calculating mise en place:', data);
+      }
     } catch (error) {
-      console.error('Error cargando ingredientes:', error);
+      console.error('Error loading mise en place:', error);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleNext = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.employee_name.trim()) {
+      alert('Por favor ingresa el nombre del empleado');
+      return;
+    }
+    setStep(2);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.shifts.create(formData);
+      await api.shifts.create({
+        ...formData,
+        mise_en_place: miseEnPlace.map(item => ({
+          ingredient_id: item.ingredient_id,
+          quantity: item.quantity,
+          unit: item.unit
+        }))
+      });
       onSuccess();
     } catch (error: any) {
       alert(error.message);
     }
   };
 
-  const lowStockItems = ingredients.filter(
-    (i) => i.current_percentage <= i.warning_threshold
-  );
-  const criticalItems = ingredients.filter(
-    (i) => i.current_percentage <= i.critical_threshold
-  );
+  const updateMiseQuantity = (index: number, newQuantity: number) => {
+    const updated = [...miseEnPlace];
+    updated[index].quantity = newQuantity;
+    setMiseEnPlace(updated);
+  };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div className="bg-white dark:bg-dark-800 rounded-xl p-8">
+          <p className="text-gray-900 dark:text-white">Calculando mise en place...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-3xl my-8 shadow-lg">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Abrir Nuevo Turno</h2>
+      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-4xl my-8 shadow-lg max-h-[90vh] overflow-y-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Abrir Nuevo Turno</h2>
+          <p className="text-gray-600 dark:text-dark-400 mt-1">
+            Paso {step} de 2: {step === 1 ? 'Información del Turno' : 'Configurar Mise en Place'}
+          </p>
+        </div>
 
-        {/* Inventory Summary */}
-        {!loading && (
-          <div className="mb-6 space-y-4">
-            <div className="bg-blue-950 border border-blue-800 rounded-lg p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <Package className="w-5 h-5 text-blue-400" />
-                <h3 className="font-semibold text-blue-300">Estado del Inventario Actual</h3>
-              </div>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{ingredients.length}</div>
-                  <div className="text-xs text-gray-600 dark:text-dark-400">Total Ingredientes</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-yellow-400">{lowStockItems.length}</div>
-                  <div className="text-xs text-gray-600 dark:text-dark-400">Stock Bajo</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-red-400">{criticalItems.length}</div>
-                  <div className="text-xs text-gray-600 dark:text-dark-400">Críticos</div>
-                </div>
-              </div>
+        {step === 1 ? (
+          <form onSubmit={handleNext} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">Fecha</label>
+              <input
+                type="date"
+                required
+                className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors font-medium"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              />
             </div>
 
-            {criticalItems.length > 0 && (
-              <div className="bg-red-950 border border-red-800 rounded-lg p-4">
-                <h4 className="font-semibold text-red-300 mb-2 text-sm">⚠️ Ingredientes Críticos:</h4>
-                <div className="space-y-1">
-                  {criticalItems.slice(0, 5).map((item) => (
-                    <div key={item.id} className="text-xs text-red-200 flex justify-between">
-                      <span>{item.name}</span>
-                      <span className="font-semibold">{item.current_percentage}%</span>
-                    </div>
-                  ))}
-                  {criticalItems.length > 5 && (
-                    <div className="text-xs text-red-300 italic">
-                      +{criticalItems.length - 5} más...
-                    </div>
-                  )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+                Tipo de Turno
+              </label>
+              <select
+                className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors font-medium"
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value as 'AM' | 'PM' })}
+              >
+                <option value="AM">AM (Preparación)</option>
+                <option value="PM">PM (Servicio)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+                Nombre del Empleado
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="Nombre completo"
+                className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-dark-500 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+                value={formData.employee_name}
+                onChange={(e) => setFormData({ ...formData, employee_name: e.target.value })}
+                autoComplete="off"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button
+                type="submit"
+                className="flex-1 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors"
+              >
+                Siguiente →
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+              <p className="text-sm text-gray-700 dark:text-dark-300">
+                <strong>Mise en Place calculado para 20 pizzas.</strong> Puedes ajustar las cantidades según tu inventario real.
+              </p>
+            </div>
+
+            <div className="max-h-96 overflow-y-auto space-y-2 border border-gray-200 dark:border-dark-700 rounded-lg p-4">
+              {miseEnPlace.map((item, index) => (
+                <div key={index} className="flex items-center gap-3 bg-gray-100 dark:bg-dark-700 p-3 rounded-lg">
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900 dark:text-white">{item.ingredient_name}</p>
+                    <p className="text-xs text-gray-600 dark:text-dark-400">{item.unit}</p>
+                  </div>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={item.quantity}
+                    onChange={(e) => updateMiseQuantity(index, parseFloat(e.target.value) || 0)}
+                    className="w-24 bg-white dark:bg-dark-600 border-2 border-gray-300 dark:border-dark-500 rounded-lg px-3 py-2 text-gray-900 dark:text-white font-semibold focus:outline-none focus:border-orange-500"
+                  />
+                  <span className="text-sm text-gray-600 dark:text-dark-400 w-8">{item.unit}</span>
                 </div>
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
+              >
+                ← Atrás
+              </button>
+              <button
+                type="submit"
+                className="flex-1 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors"
+              >
+                Abrir Turno
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
         )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">Fecha</label>
-            <input
-              type="date"
-              required
-              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
-              value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
-              Tipo de Turno
-            </label>
-            <select
-              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
-              value={formData.type}
-              onChange={(e) => setFormData({ ...formData, type: e.target.value as 'AM' | 'PM' })}
-            >
-              <option value="AM">AM (Preparación)</option>
-              <option value="PM">PM (Servicio)</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
-              Nombre del Empleado
-            </label>
-            <input
-              type="text"
-              required
-              placeholder="Nombre completo"
-              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 placeholder-gray-400 dark:placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
-              value={formData.employee_name}
-              onChange={(e) => setFormData({ ...formData, employee_name: e.target.value })}
-              autoComplete="off"
-            />
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              type="submit"
-              className="flex-1 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors"
-            >
-              Abrir Turno
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
       </div>
     </div>
   );
