@@ -9,6 +9,8 @@ import IngredientsNew from './pages/IngredientsNew';
 import ReportsNew from './pages/ReportsNew';
 import ShiftsNew from './pages/ShiftsNew';
 import ChecklistNew from './pages/ChecklistNew';
+import HistorialNew from './pages/HistorialNew';
+import AnalyticsNew from './pages/AnalyticsNew';
 import Users from './pages/Users';
 import RewardsNew from './pages/RewardsNew';
 
@@ -46,6 +48,8 @@ function App() {
           <Route path="inventario" element={<IngredientsNew />} />
           <Route path="lista-compras" element={<ReportsNew />} />
           <Route path="checklist" element={<ChecklistNew />} />
+          <Route path="historial" element={<HistorialNew />} />
+          <Route path="analytics" element={<AnalyticsNew />} />
           <Route path="premios" element={<RewardsNew />} />
           <Route path="usuarios" element={<Users />} />
         </Route>

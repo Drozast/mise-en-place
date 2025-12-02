@@ -1,16 +1,32 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
-import { useStore } from '../store/useStore';
-import { Plus, Clock } from 'lucide-react';
+
+interface Sale {
+  id: number;
+  recipe_name: string;
+  quantity: number;
+  timestamp: string;
+  size?: string;
+}
+
+interface Recipe {
+  id: number;
+  name: string;
+  size: string;
+  type: string;
+}
 
 export default function SalesNew() {
-  const navigate = useNavigate();
-  const { currentShift } = useStore();
-  const [recipes, setRecipes] = useState<any[]>([]);
-  const [sales, setSales] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [currentShift, setCurrentShift] = useState<any>(null);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [sales, setSales] = useState<Sale[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    recipe_name: '',
+    size: 'M',
+    quantity: 1,
+  });
 
   useEffect(() => {
     loadData();
@@ -18,255 +34,194 @@ export default function SalesNew() {
 
   const loadData = async () => {
     try {
-      const [recipesData, salesData] = await Promise.all([
+      const [shiftRes, recipesRes, salesRes] = await Promise.all([
+        api.shifts.getCurrent(),
         api.recipes.getAll(),
-        api.sales.getAll({ date: new Date().toISOString().split('T')[0] }),
+        api.sales.getAll(),
       ]);
-      setRecipes(recipesData);
-      setSales(salesData);
+
+      setCurrentShift(shiftRes);
+      setRecipes(recipesRes.filter((r: Recipe) => r.type === 'pizza'));
+      setSales(salesRes.filter((s: Sale) => {
+        const today = new Date().toISOString().split('T')[0];
+        const saleDate = new Date(s.timestamp).toISOString().split('T')[0];
+        return saleDate === today;
+      }));
     } catch (error) {
-      console.error('Error cargando datos:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error loading data:', error);
     }
   };
 
-  if (loading) {
-    return <div className="text-center py-12 text-gray-600 dark:text-dark-300">Cargando...</div>;
-  }
-
-  const pizzas = recipes.filter((r) => r.type === 'pizza');
-  const tablas = recipes.filter((r) => r.type === 'tabla');
-
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Registro de Ventas</h1>
-        {currentShift && (
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Registrar Venta
-          </button>
-        )}
-      </div>
-
-      {!currentShift ? (
-        <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-12 text-center shadow-lg">
-          <Clock className="w-20 h-20 text-gray-300 dark:text-dark-600 mx-auto mb-6" />
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-            No hay turno abierto
-          </h2>
-          <p className="text-gray-600 dark:text-dark-400 mb-8 max-w-md mx-auto">
-            Debes abrir un turno antes de poder registrar ventas. ¿Deseas abrir un turno ahora?
-          </p>
-          <button
-            onClick={() => navigate('/checklist')}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition-all duration-200 hover:scale-105"
-          >
-            <Clock className="w-5 h-5" />
-            Ir a Abrir Turno
-          </button>
-        </div>
-      ) : (
-        <>
-          {/* Quick Sale Buttons */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Pizzas */}
-            <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">🍕 Pizzas</h2>
-              <div className="grid grid-cols-2 gap-3">
-                {pizzas.map((recipe) => (
-                  <QuickSaleButton
-                    key={recipe.id}
-                    recipe={recipe}
-                    currentShift={currentShift}
-                    onSuccess={loadData}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Tablas */}
-            <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">🍽️ Tablas</h2>
-              <div className="grid grid-cols-2 gap-3">
-                {tablas.map((recipe) => (
-                  <QuickSaleButton
-                    key={recipe.id}
-                    recipe={recipe}
-                    currentShift={currentShift}
-                    onSuccess={loadData}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Sales History */}
-          <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Ventas de Hoy</h2>
-            {sales.length > 0 ? (
-              <div className="space-y-2">
-                {sales.map((sale) => (
-                  <div
-                    key={sale.id}
-                    className="flex justify-between items-center p-4 bg-gray-50 dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg"
-                  >
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{sale.recipe_name}</p>
-                      <p className="text-sm text-gray-600 dark:text-dark-400">
-                        {new Date(sale.timestamp).toLocaleTimeString('es-ES')}
-                      </p>
-                    </div>
-                    <span className="text-2xl font-bold text-gray-900 dark:text-white">×{sale.quantity}</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-center text-gray-500 dark:text-dark-400 py-8">
-                No hay ventas registradas hoy
-              </p>
-            )}
-          </div>
-        </>
-      )}
-
-      {showModal && currentShift && (
-        <SaleModal
-          recipes={recipes}
-          currentShift={currentShift}
-          onClose={() => setShowModal(false)}
-          onSuccess={() => {
-            loadData();
-            setShowModal(false);
-          }}
-        />
-      )}
-    </div>
-  );
-}
-
-function QuickSaleButton({ recipe, currentShift, onSuccess }: any) {
-  const [loading, setLoading] = useState(false);
-
-  const handleClick = async () => {
-    setLoading(true);
-    try {
-      await api.sales.create({
-        shift_id: currentShift.id,
-        recipe_id: recipe.id,
-        quantity: 1,
-      });
-      onSuccess();
-    } catch (error: any) {
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <button
-      onClick={handleClick}
-      disabled={loading}
-      className="p-4 bg-gray-50 dark:bg-dark-900 border-2 border-gray-300 dark:border-dark-700 rounded-lg hover:border-orange-500 hover:bg-gray-100 dark:hover:bg-dark-800 transition-all disabled:opacity-50 text-left"
-    >
-      <p className="font-semibold text-gray-900 dark:text-white">{recipe.name}</p>
-      <p className="text-xs text-gray-600 dark:text-dark-400 mt-1">Click para +1</p>
-    </button>
-  );
-}
-
-function SaleModal({ recipes, currentShift, onClose, onSuccess }: any) {
-  const [formData, setFormData] = useState({
-    recipe_id: 0,
-    quantity: 1,
-  });
+  // Get unique pizza names (without size)
+  const uniquePizzas = Array.from(new Set(recipes.map(r => r.name))).sort();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!currentShift) {
+      alert('No hay un turno abierto');
+      return;
+    }
+
+    if (!formData.recipe_name) {
+      alert('Selecciona una pizza');
+      return;
+    }
+
+    setLoading(true);
     try {
+      // Find the recipe with the selected name and size
+      const recipe = recipes.find(
+        r => r.name === formData.recipe_name && r.size === formData.size
+      );
+
+      if (!recipe) {
+        alert('Receta no encontrada');
+        return;
+      }
+
       await api.sales.create({
         shift_id: currentShift.id,
-        ...formData,
+        recipe_id: recipe.id,
+        quantity: formData.quantity,
       });
-      onSuccess();
+
+      // Reset form
+      setFormData({
+        recipe_name: '',
+        size: 'M',
+        quantity: 1,
+      });
+
+      // Reload data
+      await loadData();
     } catch (error: any) {
-      alert(error.message);
+      alert(error.message || 'Error al registrar venta');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Registrar Venta</h2>
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">Receta</label>
-            <select
-              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
-              value={formData.recipe_id}
-              onChange={(e) =>
-                setFormData({ ...formData, recipe_id: parseInt(e.target.value) })
-              }
-              required
+    <div className="p-6 space-y-6">
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Registro de Ventas</h1>
+
+      {/* Registrar Venta Form */}
+      <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Registrar Venta</h2>
+
+        {!currentShift ? (
+          <div className="text-center py-8">
+            <p className="text-gray-600 dark:text-dark-400 mb-4">
+              No hay un turno abierto. Debes abrir un turno para registrar ventas.
+            </p>
+            <button
+              onClick={() => window.location.href = '/checklist'}
+              className="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors"
             >
-              <option value={0}>Seleccionar...</option>
-              <optgroup label="Pizzas">
-                {recipes
-                  .filter((r: any) => r.type === 'pizza')
-                  .map((r: any) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name}
-                    </option>
-                  ))}
-              </optgroup>
-              <optgroup label="Tablas">
-                {recipes
-                  .filter((r: any) => r.type === 'tabla')
-                  .map((r: any) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name}
-                    </option>
-                  ))}
-              </optgroup>
-            </select>
+              Ir a Abrir Turno
+            </button>
           </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+                Pizza
+              </label>
+              <select
+                className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors"
+                value={formData.recipe_name}
+                onChange={(e) => setFormData({ ...formData, recipe_name: e.target.value })}
+                required
+              >
+                <option value="">Seleccionar pizza...</option>
+                {uniquePizzas.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">Cantidad</label>
-            <input
-              type="number"
-              min="1"
-              required
-              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
-              value={formData.quantity}
-              onChange={(e) =>
-                setFormData({ ...formData, quantity: parseInt(e.target.value) })
-              }
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+                Tamaño
+              </label>
+              <select
+                className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors"
+                value={formData.size}
+                onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                required
+              >
+                <option value="S">Pequeña (S)</option>
+                <option value="M">Mediana (M)</option>
+                <option value="L">Grande (L)</option>
+              </select>
+            </div>
 
-          <div className="flex gap-3 pt-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+                Cantidad
+              </label>
+              <input
+                type="number"
+                min="1"
+                required
+                className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors"
+                value={formData.quantity}
+                onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
+              />
+            </div>
+
             <button
               type="submit"
-              className="flex-1 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors"
+              disabled={loading}
+              className="w-full px-6 py-3 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-400 text-white font-semibold rounded-lg transition-colors"
             >
-              Registrar
+              {loading ? 'Registrando...' : 'Continuar'}
             </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
-            >
-              Cancelar
-            </button>
+          </form>
+        )}
+      </div>
+
+      {/* Historial de Ventas */}
+      <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Historial de Ventas</h2>
+
+        {sales.length > 0 ? (
+          <div className="space-y-3">
+            {sales.map((sale) => (
+              <div
+                key={sale.id}
+                className="flex justify-between items-center p-4 bg-gray-50 dark:bg-dark-900/50 border border-gray-200 dark:border-dark-700/50 rounded-lg"
+              >
+                <div>
+                  <p className="font-semibold text-gray-900 dark:text-white">
+                    {sale.recipe_name} {sale.size ? `(${sale.size})` : ''}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-dark-400">
+                    {new Date(sale.timestamp).toLocaleTimeString('es-ES', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+                <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                  ×{sale.quantity}
+                </span>
+              </div>
+            ))}
           </div>
-        </form>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500 dark:text-dark-400">
+              {currentShift
+                ? 'No hay ventas registradas hoy'
+                : 'Abre un turno para comenzar a registrar ventas'
+              }
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
