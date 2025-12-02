@@ -84,12 +84,12 @@ export default function Users() {
         </button>
       </div>
 
-      <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
         <div className="space-y-3">
           {users.map((u) => (
             <div
               key={u.id}
-              className={`flex items-center gap-4 p-4 bg-gray-50 dark:bg-dark-900 border rounded-lg transition-colors ${
+              className={`flex items-center gap-4 p-4 bg-gray-100 dark:bg-dark-900 border rounded-lg transition-colors ${
                 u.active ? 'border-gray-200 dark:border-dark-700' : 'border-gray-300 dark:border-dark-800 opacity-60'
               }`}
             >
@@ -209,7 +209,7 @@ function CreateUserModal({ onClose, onSuccess }: any) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-lg">
+      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-lg">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Nuevo Usuario</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
@@ -218,7 +218,7 @@ function CreateUserModal({ onClose, onSuccess }: any) {
               type="text"
               required
               placeholder="12345678-9"
-              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 placeholder-gray-400 dark:placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-dark-500 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.rut}
               onChange={handleRutChange}
               maxLength={10}
@@ -237,7 +237,7 @@ function CreateUserModal({ onClose, onSuccess }: any) {
               type="text"
               required
               placeholder="Juan Pérez"
-              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 placeholder-gray-400 dark:placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-dark-500 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               autoComplete="off"
@@ -247,7 +247,7 @@ function CreateUserModal({ onClose, onSuccess }: any) {
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">Rol</label>
             <select
-              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.role}
               onChange={(e) =>
                 setFormData({ ...formData, role: e.target.value as 'empleado' | 'chef' })
