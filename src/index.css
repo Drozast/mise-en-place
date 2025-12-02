@@ -96,3 +96,22 @@ input.dark-input:-webkit-autofill:active {
   box-shadow: 0 0 0 30px #1A1A1A inset !important;
   caret-color: #FAFAFA !important;
 }
+
+/* Animación para la card motivacional */
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: translateY(100px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}

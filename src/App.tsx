@@ -9,6 +9,7 @@ import IngredientsNew from './pages/IngredientsNew';
 import ReportsNew from './pages/ReportsNew';
 import ShiftsNew from './pages/ShiftsNew';
 import Users from './pages/Users';
+import RewardsNew from './pages/RewardsNew';
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -44,6 +45,7 @@ function App() {
           <Route path="inventario" element={<IngredientsNew />} />
           <Route path="lista-compras" element={<ReportsNew />} />
           <Route path="checklist" element={<ShiftsNew />} />
+          <Route path="premios" element={<RewardsNew />} />
           <Route path="usuarios" element={<Users />} />
         </Route>
 

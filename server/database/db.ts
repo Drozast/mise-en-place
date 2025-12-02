@@ -158,6 +158,20 @@ const initialize = () => {
     )
   `);
 
+  // Tabla de premios/recompensas
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS rewards (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      icon TEXT DEFAULT '🎁',
+      active INTEGER DEFAULT 1,
+      created_by TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
   // Migración: Agregar total_quantity si no existe
   try {
     const columns = sqlite.pragma('table_info(ingredients)');

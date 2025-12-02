@@ -117,4 +117,14 @@ export const api = {
     getEmployeeStats: (name: string) => request<any>(`/gamification/employee/${encodeURIComponent(name)}`),
     calculateRewards: () => request<any>('/gamification/calculate-rewards', { method: 'POST' }),
   },
+
+  // Rewards
+  rewards: {
+    getAll: () => request<any[]>('/rewards'),
+    getById: (id: number) => request<any>(`/rewards/${id}`),
+    create: (data: any) => request<any>('/rewards', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id: number, data: any) => request<any>(`/rewards/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id: number) => request<any>(`/rewards/${id}`, { method: 'DELETE' }),
+    getRandom: () => request<any>('/rewards/random/active'),
+  },
 };

@@ -9,9 +9,11 @@ import {
   LogOut,
   Users,
   Sun,
-  Moon
+  Moon,
+  Gift
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
+import MotivationalCard from './MotivationalCard';
 
 const navItems = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -20,6 +22,7 @@ const navItems = [
   { path: '/inventario', icon: Package, label: 'Inventario Real' },
   { path: '/lista-compras', icon: ShoppingBag, label: 'Lista Compras' },
   { path: '/checklist', icon: CheckSquare, label: 'Checklist' },
+  { path: '/premios', icon: Gift, label: 'Premios' },
 ];
 
 export default function LayoutNew() {
@@ -122,6 +125,9 @@ export default function LayoutNew() {
       <main className="p-6">
         <Outlet />
       </main>
+
+      {/* Motivational Card - Solo para empleados */}
+      {user?.role === 'empleado' && <MotivationalCard />}
     </div>
   );
 }
