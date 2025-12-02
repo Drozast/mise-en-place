@@ -73,7 +73,7 @@ export default function IngredientsNew() {
           return (
             <div key={category} className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 capitalize">{category}</h2>
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {categoryIngredients.map((ingredient) => (
                   <div
                     key={ingredient.id}
