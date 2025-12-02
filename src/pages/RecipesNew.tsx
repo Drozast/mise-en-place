@@ -60,7 +60,7 @@ export default function RecipesNew() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Pizzas */}
-        <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+        <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
             🍕 Pizzas ({pizzas.length})
           </h2>
@@ -95,7 +95,7 @@ export default function RecipesNew() {
         </div>
 
         {/* Tablas */}
-        <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+        <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
             🍽️ Tablas ({tablas.length})
           </h2>
@@ -183,7 +183,7 @@ function RecipeModal({ ingredients, onClose, onSuccess }: any) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Nueva Receta</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>

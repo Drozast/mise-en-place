@@ -68,7 +68,7 @@ export default function ReportsNew() {
       </div>
 
       {/* Shopping List */}
-      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+      <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <ShoppingBag className="w-6 h-6" />
@@ -129,7 +129,7 @@ export default function ReportsNew() {
       {dailyReport && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Sales Summary */}
-          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+          <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Ventas del Día</h2>
             {dailyReport.sales?.length > 0 ? (
               <div className="space-y-3">
@@ -152,7 +152,7 @@ export default function ReportsNew() {
           </div>
 
           {/* Shifts Summary */}
-          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+          <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Turnos del Día</h2>
             {dailyReport.shifts?.length > 0 ? (
               <div className="space-y-3">
@@ -185,7 +185,7 @@ export default function ReportsNew() {
           </div>
 
           {/* Low Stock */}
-          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+          <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Stock Crítico</h2>
             {dailyReport.lowStock?.length > 0 ? (
               <div className="space-y-2">
@@ -206,7 +206,7 @@ export default function ReportsNew() {
           </div>
 
           {/* Alerts Summary */}
-          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+          <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Alertas del Día</h2>
             {dailyReport.alerts?.length > 0 ? (
               <div className="space-y-2">

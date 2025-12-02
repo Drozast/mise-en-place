@@ -55,7 +55,7 @@ export default function SalesNew() {
       </div>
 
       {!currentShift ? (
-        <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-12 text-center shadow-lg">
+        <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-12 text-center shadow-lg">
           <Clock className="w-20 h-20 text-gray-300 dark:text-dark-600 mx-auto mb-6" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
             No hay turno abierto
@@ -76,7 +76,7 @@ export default function SalesNew() {
           {/* Quick Sale Buttons */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Pizzas */}
-            <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+            <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">🍕 Pizzas</h2>
               <div className="grid grid-cols-2 gap-3">
                 {pizzas.map((recipe) => (
@@ -91,7 +91,7 @@ export default function SalesNew() {
             </div>
 
             {/* Tablas */}
-            <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+            <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">🍽️ Tablas</h2>
               <div className="grid grid-cols-2 gap-3">
                 {tablas.map((recipe) => (
@@ -107,7 +107,7 @@ export default function SalesNew() {
           </div>
 
           {/* Sales History */}
-          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+          <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Ventas de Hoy</h2>
             {sales.length > 0 ? (
               <div className="space-y-2">
@@ -202,7 +202,7 @@ function SaleModal({ recipes, currentShift, onClose, onSuccess }: any) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
+      <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Registrar Venta</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>

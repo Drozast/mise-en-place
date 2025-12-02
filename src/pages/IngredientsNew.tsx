@@ -71,7 +71,7 @@ export default function IngredientsNew() {
           const categoryIngredients = ingredients.filter((i) => i.category === category);
 
           return (
-            <div key={category} className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+            <div key={category} className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 capitalize">{category}</h2>
               <div className="space-y-3">
                 {categoryIngredients.map((ingredient) => (
@@ -191,7 +191,7 @@ function AddIngredientModal({ onClose, onSuccess }: any) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
+      <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Nuevo Ingrediente</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -311,7 +311,7 @@ function RestockModal({ ingredient, onClose, onSuccess }: any) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
+      <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
           Restoquear: {ingredient.name}
         </h2>

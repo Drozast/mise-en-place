@@ -87,7 +87,7 @@ export default function ShiftsNew() {
       {currentShift ? (
         <div className="space-y-6">
           {/* Shift Info */}
-          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+          <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -108,7 +108,7 @@ export default function ShiftsNew() {
           </div>
 
           {/* Tasks Checklist */}
-          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+          <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
               Tareas del Turno
               <span className="ml-3 text-base text-gray-600 dark:text-dark-400 font-normal">
@@ -198,7 +198,7 @@ export default function ShiftsNew() {
           </div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-12 text-center shadow-lg">
+        <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-12 text-center shadow-lg">
           <Clock className="w-16 h-16 text-dark-600 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No hay turno abierto</h2>
           <p className="text-gray-600 dark:text-dark-400 mb-6">
@@ -279,7 +279,7 @@ function OpenShiftModal({ onClose, onSuccess }: any) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-3xl my-8 shadow-lg">
+      <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-3xl my-8 shadow-lg">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Abrir Nuevo Turno</h2>
 
         {/* Inventory Summary */}
@@ -392,7 +392,7 @@ function OpenShiftModal({ onClose, onSuccess }: any) {
 function AuthorizationModal({ pendingTasks, onClose, onAuthorize }: any) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-dark-800 border-2 border-orange-600 rounded-xl p-6 w-full max-w-md shadow-lg">
+      <div className="bg-gray-50 dark:bg-dark-800 border-2 border-orange-600 rounded-xl p-6 w-full max-w-md shadow-lg">
         <div className="flex items-center gap-3 mb-4">
           <AlertTriangle className="w-8 h-8 text-orange-500" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Autorización Requerida</h2>
