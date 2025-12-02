@@ -11,7 +11,7 @@
     "build:check": "tsc && vite build",
     "build:server": "tsc --project tsconfig.node.json",
     "start": "node --import tsx server/index.ts",
-    "postinstall": "bash scripts/post-deploy.sh",
+    "postinstall": "sh scripts/post-deploy.sh",
     "preview": "vite preview",
     "seed": "tsx server/database/seed-waddington.ts",
     "db:reset": "rm -f data/pizza.db && npm run seed"

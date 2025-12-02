@@ -42,7 +42,7 @@ router.get('/shopping-list', (req: Request, res: Response) => {
       params.push(date);
     } else {
       // Last 7 days by default
-      salesQuery += ' WHERE s.timestamp >= datetime("now", "-7 days")';
+      salesQuery += ' WHERE s.timestamp >= datetime(\'now\', \'-7 days\')';
     }
 
     salesQuery += ' GROUP BY ri.ingredient_id';
