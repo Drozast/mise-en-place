@@ -194,13 +194,71 @@ Respuesta esperada:
 
 ---
 
-## 🔄 Updates
+## 🔄 Auto-Deploy Configuration
 
-Para actualizar la aplicación:
+### Configurar Webhook de GitHub
 
-1. Push cambios a GitHub
-2. Coolify auto-detectará y re-deployará
-3. O manualmente: Click en "Deploy" en Coolify
+Para que Coolify detecte automáticamente los cambios en GitHub:
+
+1. **En Coolify:**
+   - Ve a tu aplicación
+   - Click en la pestaña "Webhooks"
+   - Copia el "Webhook URL" que Coolify te proporciona
+
+2. **En GitHub:**
+   - Ve a tu repositorio: https://github.com/Drozast/mise-en-place
+   - Click en **Settings** → **Webhooks** → **Add webhook**
+   - Pega el Webhook URL de Coolify
+   - Content type: `application/json`
+   - Events: Selecciona "Just the push event"
+   - Click en **Add webhook**
+
+3. **Activar Auto-Deploy en Coolify:**
+   - En tu aplicación de Coolify
+   - Ve a **General** settings
+   - Activa la opción **"Auto Deploy"**
+   - Selecciona la rama: `main`
+
+### Verificar que funciona:
+
+1. Haz un cambio pequeño en el código
+2. `git add . && git commit -m "test auto-deploy" && git push`
+3. Ve a Coolify y verifica que se inicie el deploy automáticamente
+
+### Si no funciona:
+
+**Opción A: Re-deployar manualmente**
+- Click en "Deploy" en Coolify cada vez que hagas push
+
+**Opción B: Verificar webhook**
+- En GitHub → Settings → Webhooks
+- Click en el webhook
+- Ver "Recent Deliveries" para debug
+
+**Opción C: Usar GitHub Actions** (alternativa más confiable)
+
+Si el webhook directo no funciona, usa GitHub Actions:
+
+1. **Obtener Webhook URL de Coolify:**
+   - En Coolify → tu aplicación → Webhooks
+   - Copia el "Webhook URL"
+
+2. **Configurar Secret en GitHub:**
+   - Ve a tu repo: https://github.com/Drozast/mise-en-place
+   - Settings → Secrets and variables → Actions
+   - Click "New repository secret"
+   - Name: `COOLIFY_WEBHOOK_URL`
+   - Value: Pega la URL del webhook de Coolify
+   - Save
+
+3. **El workflow ya está configurado:**
+   - Archivo: `.github/workflows/deploy-coolify.yml`
+   - Se ejecuta automáticamente en cada push a `main`
+
+4. **Verificar:**
+   - Haz push de cambios
+   - Ve a GitHub → Actions
+   - Verifica que el workflow se ejecute correctamente
 
 ---
 
