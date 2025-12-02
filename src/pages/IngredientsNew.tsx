@@ -53,6 +53,17 @@ export default function IngredientsNew() {
     return <div className="text-center py-12 text-gray-600 dark:text-dark-300">Cargando...</div>;
   }
 
+  // Separar masas del resto de ingredientes
+  const masas = ingredients.filter((i) => i.category === 'masas');
+  const otherIngredients = ingredients.filter((i) => i.category !== 'masas');
+  const otherCategories = [...new Set(otherIngredients.map((i) => i.category))];
+
+  // Calcular totales de masas
+  const totalMasasDisponibles = masas.reduce((sum, m) =>
+    sum + (m.current_quantity || Math.round((m.current_percentage / 100) * (m.total_quantity || 20))), 0
+  );
+  const totalMasasCapacidad = masas.reduce((sum, m) => sum + (m.total_quantity || 20), 0);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -66,73 +77,94 @@ export default function IngredientsNew() {
         </button>
       </div>
 
+      {/* Sección Masas Disponibles */}
+      {masas.length > 0 && (
+        <div className="bg-dark-900/90 dark:bg-dark-800/90 border border-gray-700/50 dark:border-dark-700 rounded-xl p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              🍕 Masas Disponibles
+            </h2>
+            <button className="px-4 py-2 text-sm text-gray-400 hover:text-white border border-gray-700 hover:border-gray-600 rounded-lg transition-colors">
+              Lunes
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            {masas.map((masa) => {
+              const cantidad = masa.current_quantity || Math.round((masa.current_percentage / 100) * (masa.total_quantity || 20));
+              return (
+                <div key={masa.id} className="bg-dark-800/50 border border-gray-700/50 rounded-lg p-6 text-center">
+                  <div className="text-5xl font-bold text-green-400 mb-2">
+                    {cantidad}
+                  </div>
+                  <div className="text-gray-400 text-sm">
+                    {masa.name}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex justify-between items-center pt-4 border-t border-gray-700/50">
+            <span className="text-gray-400">Total disponibles</span>
+            <span className="text-xl font-bold text-white">
+              {totalMasasDisponibles} / {totalMasasCapacidad}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Inventario Actual */}
       <div className="space-y-6">
-        {categories.map((category) => {
-          const categoryIngredients = ingredients.filter((i) => i.category === category);
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Inventario Actual</h2>
+          <button className="px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors">
+            Editar Manual
+          </button>
+        </div>
+
+        {otherCategories.map((category) => {
+          const categoryIngredients = otherIngredients.filter((i) => i.category === category);
 
           return (
-            <div key={category} className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 capitalize">{category}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div key={category} className="space-y-3">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white capitalize">{category}</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {categoryIngredients.map((ingredient) => (
                   <div
                     key={ingredient.id}
-                    className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg hover:border-orange-500 transition-colors"
+                    className="bg-dark-900/80 dark:bg-dark-800/80 border border-gray-700/50 dark:border-dark-700 rounded-lg p-4 hover:border-orange-500/50 transition-colors"
                   >
-                    <div className="flex-1">
-                      <div className="flex justify-between mb-2">
-                        <span className="font-medium text-lg text-gray-900 dark:text-white">
-                          {ingredient.name}
-                        </span>
-                        <div className="text-right">
-                          <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                            {ingredient.current_quantity || Math.round((ingredient.current_percentage / 100) * (ingredient.total_quantity || 1000))}{ingredient.unit} / {ingredient.total_quantity || 1000}{ingredient.unit}
-                          </div>
-                          <div className="text-xs text-gray-600 dark:text-dark-400">
-                            {ingredient.current_percentage}% disponible
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1">
-                          <div className="w-full bg-gray-200 dark:bg-dark-700 rounded-full h-3 overflow-hidden">
-                            <div
-                              className={`h-full rounded-full transition-all ${getPercentageColor(
-                                ingredient.current_percentage,
-                                ingredient.critical_threshold,
-                                ingredient.warning_threshold
-                              )}`}
-                              style={{ width: `${ingredient.current_percentage}%` }}
-                            />
-                          </div>
-                        </div>
-                        <span
-                          className={`text-sm font-semibold min-w-[50px] text-right ${
-                            ingredient.current_percentage <= ingredient.critical_threshold
-                              ? 'text-red-400'
-                              : ingredient.current_percentage <= ingredient.warning_threshold
-                              ? 'text-yellow-400'
-                              : 'text-green-400'
-                          }`}
-                        >
-                          {ingredient.current_percentage}%
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
+                    <div className="flex justify-between items-start mb-3">
+                      <span className="font-semibold text-sm text-white">
+                        {ingredient.name}
+                      </span>
                       <button
                         onClick={() => handleRestock(ingredient)}
-                        className="flex items-center gap-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors"
+                        className="text-gray-400 hover:text-white"
                       >
                         <RefreshCw className="w-4 h-4" />
-                        Restoquear
                       </button>
-                      <button
-                        onClick={() => handleDelete(ingredient.id)}
-                        className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    </div>
+
+                    <div className="mb-3">
+                      <div className="text-xs text-gray-400 mb-1">
+                        {ingredient.current_quantity || Math.round((ingredient.current_percentage / 100) * (ingredient.total_quantity || 1000))}{ingredient.unit} / {ingredient.total_quantity || 1000}{ingredient.unit}
+                      </div>
+                      <div className="text-2xl font-bold text-green-400">
+                        {ingredient.current_percentage}%
+                      </div>
+                    </div>
+
+                    <div className="w-full bg-gray-800 dark:bg-dark-700 rounded-full h-2 overflow-hidden">
+                      <div
+                        className={`h-2 rounded-full transition-all ${getPercentageColor(
+                          ingredient.current_percentage,
+                          ingredient.critical_threshold,
+                          ingredient.warning_threshold
+                        )}`}
+                        style={{ width: `${ingredient.current_percentage}%` }}
+                      />
                     </div>
                   </div>
                 ))}
