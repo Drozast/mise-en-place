@@ -134,11 +134,11 @@ export default function RecipesNew() {
       </div>
 
       {/* Tab de Pizzas */}
-      <div className="bg-dark-900/50 dark:bg-dark-800/50 border border-orange-600/30 rounded-lg p-2 inline-block">
+      <div className="bg-orange-50 dark:bg-dark-800/50 border border-orange-200 dark:border-orange-600/30 rounded-lg p-2 inline-block">
         <span className="px-4 py-2 bg-orange-600/20 text-orange-600 dark:text-orange-400 rounded font-semibold text-sm">
           PIZZAS
         </span>
-        <span className="ml-2 text-gray-400 dark:text-dark-400 text-sm">
+        <span className="ml-2 text-gray-600 dark:text-dark-400 text-sm">
           {Object.keys(pizzasByName).length} pizzas
         </span>
       </div>
@@ -151,10 +151,10 @@ export default function RecipesNew() {
             <div
               key={name}
               onClick={() => setSelectedPizza({ name, pizzas })}
-              className="bg-dark-900/80 dark:bg-dark-800/80 border border-gray-700/50 dark:border-dark-600/50 rounded-lg p-5 hover:border-orange-600/50 hover:bg-dark-900/90 transition-all cursor-pointer"
+              className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-lg p-5 hover:border-orange-500 dark:hover:border-orange-600/50 hover:shadow-md transition-all cursor-pointer"
             >
-              <h3 className="text-xl font-bold text-white mb-2">{name}</h3>
-              <p className="text-gray-400 dark:text-dark-400 text-sm">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{name}</h3>
+              <p className="text-gray-600 dark:text-dark-400 text-sm">
                 {uniqueIngredients} ingredientes
               </p>
             </div>
@@ -165,11 +165,11 @@ export default function RecipesNew() {
       {/* Tablas */}
       {tablas.length > 0 && (
         <div className="mt-8">
-          <div className="bg-dark-900/50 dark:bg-dark-800/50 border border-orange-600/30 rounded-lg p-2 inline-block mb-4">
+          <div className="bg-orange-50 dark:bg-dark-800/50 border border-orange-200 dark:border-orange-600/30 rounded-lg p-2 inline-block mb-4">
             <span className="px-4 py-2 bg-orange-600/20 text-orange-600 dark:text-orange-400 rounded font-semibold text-sm">
               TABLAS
             </span>
-            <span className="ml-2 text-gray-400 dark:text-dark-400 text-sm">
+            <span className="ml-2 text-gray-600 dark:text-dark-400 text-sm">
               {tablas.length} tablas
             </span>
           </div>
@@ -178,12 +178,12 @@ export default function RecipesNew() {
             {tablas.map((tabla) => (
               <div
                 key={tabla.id}
-                className="bg-dark-900/80 dark:bg-dark-800/80 border border-gray-700/50 dark:border-dark-600/50 rounded-lg p-5"
+                className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-lg p-5"
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-xl font-bold text-white mb-2">{tabla.name}</h3>
-                    <p className="text-gray-400 dark:text-dark-400 text-sm">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{tabla.name}</h3>
+                    <p className="text-gray-600 dark:text-dark-400 text-sm">
                       {tabla.ingredients?.length || 0} ingredientes
                     </p>
                   </div>
@@ -232,10 +232,10 @@ function PizzaDetailModal({ pizza, miseEnPlace, getMiseStatus, getStatusColor, g
   const { name, pizzas } = pizza;
 
   return (
-    <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
-      <div className="bg-dark-900 dark:bg-dark-800 border border-gray-700 dark:border-dark-600 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-dark-900 border border-gray-700 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
-        <div className="sticky top-0 bg-dark-900 dark:bg-dark-800 border-b border-gray-700 dark:border-dark-600 p-6 flex justify-between items-center">
+        <div className="sticky top-0 bg-dark-900 border-b border-gray-700 p-6 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="bg-orange-600/20 p-3 rounded-lg">
               <span className="text-3xl">🍕</span>
@@ -249,7 +249,7 @@ function PizzaDetailModal({ pizza, miseEnPlace, getMiseStatus, getStatusColor, g
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-800 dark:hover:bg-dark-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
           >
             <X className="w-6 h-6 text-gray-400" />
           </button>
@@ -282,7 +282,7 @@ function PizzaDetailModal({ pizza, miseEnPlace, getMiseStatus, getStatusColor, g
               return (
                 <div
                   key={idx}
-                  className="bg-dark-800/50 dark:bg-dark-700/50 border border-gray-700/50 dark:border-dark-600/50 rounded-lg p-4"
+                  className="bg-dark-800/50 border border-gray-700/50 rounded-lg p-4"
                 >
                   {/* Nombre del ingrediente */}
                   <div className="flex justify-between items-center mb-3">
@@ -307,7 +307,7 @@ function PizzaDetailModal({ pizza, miseEnPlace, getMiseStatus, getStatusColor, g
                       </div>
 
                       {/* Progress bar */}
-                      <div className="w-full bg-gray-800 dark:bg-dark-900 rounded-full h-2 mb-2">
+                      <div className="w-full bg-gray-800 rounded-full h-2 mb-2">
                         <div
                           className={`h-2 rounded-full transition-all ${getProgressBarColor(miseStatus.status)}`}
                           style={{ width: `${miseStatus.percentage}%` }}
@@ -396,8 +396,8 @@ function RecipeModal({ ingredients, onClose, onSuccess }: any) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
-      <div className="bg-dark-900 dark:bg-dark-800 border border-gray-700 dark:border-dark-600 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-dark-900 border border-gray-700 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
         <h2 className="text-2xl font-bold text-white mb-6">Nueva Receta</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
@@ -405,7 +405,7 @@ function RecipeModal({ ingredients, onClose, onSuccess }: any) {
             <input
               type="text"
               required
-              className="w-full bg-dark-800 dark:bg-dark-700 border-2 border-gray-700 dark:border-dark-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-dark-800 border-2 border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="Ej: Margarita"
@@ -417,7 +417,7 @@ function RecipeModal({ ingredients, onClose, onSuccess }: any) {
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-2">Tipo</label>
               <select
-                className="w-full bg-dark-800 dark:bg-dark-700 border-2 border-gray-700 dark:border-dark-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors font-medium"
+                className="w-full bg-dark-800 border-2 border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors font-medium"
                 value={formData.type}
                 onChange={(e) =>
                   setFormData({ ...formData, type: e.target.value as 'pizza' | 'tabla' })
@@ -432,7 +432,7 @@ function RecipeModal({ ingredients, onClose, onSuccess }: any) {
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">Tamaño</label>
                 <select
-                  className="w-full bg-dark-800 dark:bg-dark-700 border-2 border-gray-700 dark:border-dark-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors font-medium"
+                  className="w-full bg-dark-800 border-2 border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors font-medium"
                   value={formData.size}
                   onChange={(e) =>
                     setFormData({ ...formData, size: e.target.value as 'S' | 'M' | 'L' })
@@ -463,7 +463,7 @@ function RecipeModal({ ingredients, onClose, onSuccess }: any) {
               {formData.ingredients.map((ing, index) => (
                 <div key={index} className="flex gap-2">
                   <select
-                    className="flex-1 bg-dark-800 dark:bg-dark-700 border-2 border-gray-700 dark:border-dark-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors font-medium"
+                    className="flex-1 bg-dark-800 border-2 border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors font-medium"
                     value={ing.ingredient_id}
                     onChange={(e) =>
                       handleIngredientChange(index, 'ingredient_id', parseInt(e.target.value))
@@ -482,7 +482,7 @@ function RecipeModal({ ingredients, onClose, onSuccess }: any) {
                     step="0.01"
                     min="0"
                     placeholder="Cantidad"
-                    className="w-28 bg-dark-800 dark:bg-dark-700 border-2 border-gray-700 dark:border-dark-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+                    className="w-28 bg-dark-800 border-2 border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors font-medium"
                     value={ing.quantity}
                     onChange={(e) =>
                       handleIngredientChange(index, 'quantity', parseFloat(e.target.value))
