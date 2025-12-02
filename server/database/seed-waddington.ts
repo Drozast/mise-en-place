@@ -54,8 +54,10 @@ export const seedWaddingtonData = () => {
     { name: 'Pesto', unit: 'ml', category: 'salsas' },
     { name: 'Pomodoro o crema', unit: 'ml', category: 'salsas' },
 
-    // Masa
-    { name: 'Masa Pizza', unit: 'g', category: 'masas' },
+    // Masas (medidas en unidades)
+    { name: 'Masa Grande (L)', unit: 'unidades', category: 'masas' },
+    { name: 'Masa Mediana (M)', unit: 'unidades', category: 'masas' },
+    { name: 'Masa Pequeña (S)', unit: 'unidades', category: 'masas' },
   ];
 
   const ingredientStmt = db.sqlite.prepare(`
@@ -81,54 +83,54 @@ export const seedWaddingtonData = () => {
 
   const pizzasBySize: PizzaRecipe[] = [
     // TEXANA
-    { name: 'Texana', size: 'L', ingredients: { 'Mozzarella': 250, 'Pollo': 100, 'Tocino': 100, 'Cebolla morada': 30, 'Salsa BBQ': 160, 'Masa Pizza': 450 } },
-    { name: 'Texana', size: 'M', ingredients: { 'Mozzarella': 200, 'Pollo': 70, 'Tocino': 70, 'Cebolla morada': 30, 'Salsa BBQ': 100, 'Masa Pizza': 300 } },
-    { name: 'Texana', size: 'S', ingredients: { 'Mozzarella': 150, 'Pollo': 50, 'Tocino': 50, 'Cebolla morada': 30, 'Salsa BBQ': 50, 'Masa Pizza': 200 } },
+    { name: 'Texana', size: 'L', ingredients: { 'Mozzarella': 250, 'Pollo': 100, 'Tocino': 100, 'Cebolla morada': 30, 'Salsa BBQ': 160, 'Masa Grande (L)': 1 } },
+    { name: 'Texana', size: 'M', ingredients: { 'Mozzarella': 200, 'Pollo': 70, 'Tocino': 70, 'Cebolla morada': 30, 'Salsa BBQ': 100, 'Masa Mediana (M)': 1 } },
+    { name: 'Texana', size: 'S', ingredients: { 'Mozzarella': 150, 'Pollo': 50, 'Tocino': 50, 'Cebolla morada': 30, 'Salsa BBQ': 50, 'Masa Pequeña (S)': 1 } },
 
     // QUATTRO FORMAGGI
-    { name: 'Quattro Formaggi', size: 'L', ingredients: { 'Mozzarella': 250, 'Queso azul': 50, 'Queso de cabra': 50, 'Provoleta': 50, 'Aceite de oliva': 20, 'Pomodoro': 100, 'Masa Pizza': 450 } },
-    { name: 'Quattro Formaggi', size: 'M', ingredients: { 'Mozzarella': 200, 'Queso azul': 30, 'Queso de cabra': 30, 'Provoleta': 30, 'Aceite de oliva': 10, 'Pomodoro': 100, 'Masa Pizza': 300 } },
-    { name: 'Quattro Formaggi', size: 'S', ingredients: { 'Mozzarella': 150, 'Queso azul': 20, 'Queso de cabra': 20, 'Provoleta': 20, 'Aceite de oliva': 10, 'Pomodoro': 50, 'Masa Pizza': 200 } },
+    { name: 'Quattro Formaggi', size: 'L', ingredients: { 'Mozzarella': 250, 'Queso azul': 50, 'Queso de cabra': 50, 'Provoleta': 50, 'Aceite de oliva': 20, 'Pomodoro': 100, 'Masa Grande (L)': 1 } },
+    { name: 'Quattro Formaggi', size: 'M', ingredients: { 'Mozzarella': 200, 'Queso azul': 30, 'Queso de cabra': 30, 'Provoleta': 30, 'Aceite de oliva': 10, 'Pomodoro': 100, 'Masa Mediana (M)': 1 } },
+    { name: 'Quattro Formaggi', size: 'S', ingredients: { 'Mozzarella': 150, 'Queso azul': 20, 'Queso de cabra': 20, 'Provoleta': 20, 'Aceite de oliva': 10, 'Pomodoro': 50, 'Masa Pequeña (S)': 1 } },
 
     // MAR Y TIERRA
-    { name: 'Mar y Tierra', size: 'L', ingredients: { 'Camarón': 80, 'Jamón serrano': 35, 'Rúcula (opc.)': 20, 'Pomodoro': 100, 'Masa Pizza': 450 } },
-    { name: 'Mar y Tierra', size: 'M', ingredients: { 'Camarón': 60, 'Jamón serrano': 25, 'Rúcula (opc.)': 20, 'Pomodoro': 100, 'Masa Pizza': 300 } },
-    { name: 'Mar y Tierra', size: 'S', ingredients: { 'Camarón': 40, 'Jamón serrano': 15, 'Rúcula (opc.)': 20, 'Pomodoro': 50, 'Masa Pizza': 200 } },
+    { name: 'Mar y Tierra', size: 'L', ingredients: { 'Camarón': 80, 'Jamón serrano': 35, 'Rúcula (opc.)': 20, 'Pomodoro': 100, 'Masa Grande (L)': 1 } },
+    { name: 'Mar y Tierra', size: 'M', ingredients: { 'Camarón': 60, 'Jamón serrano': 25, 'Rúcula (opc.)': 20, 'Pomodoro': 100, 'Masa Mediana (M)': 1 } },
+    { name: 'Mar y Tierra', size: 'S', ingredients: { 'Camarón': 40, 'Jamón serrano': 15, 'Rúcula (opc.)': 20, 'Pomodoro': 50, 'Masa Pequeña (S)': 1 } },
 
     // PEPPERONI
-    { name: 'Pepperoni', size: 'L', ingredients: { 'Mozzarella': 300, 'Pepperoni': 150, 'Pomodoro': 100, 'Masa Pizza': 450 } },
-    { name: 'Pepperoni', size: 'M', ingredients: { 'Mozzarella': 250, 'Pepperoni': 100, 'Pomodoro': 100, 'Masa Pizza': 300 } },
-    { name: 'Pepperoni', size: 'S', ingredients: { 'Mozzarella': 150, 'Pepperoni': 100, 'Pomodoro': 50, 'Masa Pizza': 200 } },
+    { name: 'Pepperoni', size: 'L', ingredients: { 'Mozzarella': 300, 'Pepperoni': 150, 'Pomodoro': 100, 'Masa Grande (L)': 1 } },
+    { name: 'Pepperoni', size: 'M', ingredients: { 'Mozzarella': 250, 'Pepperoni': 100, 'Pomodoro': 100, 'Masa Mediana (M)': 1 } },
+    { name: 'Pepperoni', size: 'S', ingredients: { 'Mozzarella': 150, 'Pepperoni': 100, 'Pomodoro': 50, 'Masa Pequeña (S)': 1 } },
 
     // WADDINGTON
-    { name: 'Waddington', size: 'L', ingredients: { 'Carne': 100, 'Jamón artesanal': 60, 'Salame': 60, 'Mozzarella': 250, 'Pomodoro': 100, 'Masa Pizza': 450 } },
-    { name: 'Waddington', size: 'M', ingredients: { 'Carne': 60, 'Jamón artesanal': 40, 'Salame': 40, 'Mozzarella': 200, 'Pomodoro': 100, 'Masa Pizza': 300 } },
-    { name: 'Waddington', size: 'S', ingredients: { 'Carne': 30, 'Jamón artesanal': 20, 'Salame': 20, 'Mozzarella': 150, 'Pomodoro': 50, 'Masa Pizza': 200 } },
+    { name: 'Waddington', size: 'L', ingredients: { 'Carne': 100, 'Jamón artesanal': 60, 'Salame': 60, 'Mozzarella': 250, 'Pomodoro': 100, 'Masa Grande (L)': 1 } },
+    { name: 'Waddington', size: 'M', ingredients: { 'Carne': 60, 'Jamón artesanal': 40, 'Salame': 40, 'Mozzarella': 200, 'Pomodoro': 100, 'Masa Mediana (M)': 1 } },
+    { name: 'Waddington', size: 'S', ingredients: { 'Carne': 30, 'Jamón artesanal': 20, 'Salame': 20, 'Mozzarella': 150, 'Pomodoro': 50, 'Masa Pequeña (S)': 1 } },
 
     // PANCETTA A LA CREMA
-    { name: 'Pancetta a la Crema', size: 'L', ingredients: { 'Crema': 100, 'Cebolla caramelizada': 80, 'Tocino': 80, 'Mozzarella': 250, 'Masa Pizza': 450 } },
-    { name: 'Pancetta a la Crema', size: 'M', ingredients: { 'Crema': 100, 'Cebolla caramelizada': 60, 'Tocino': 60, 'Mozzarella': 200, 'Masa Pizza': 300 } },
-    { name: 'Pancetta a la Crema', size: 'S', ingredients: { 'Crema': 50, 'Cebolla caramelizada': 30, 'Tocino': 30, 'Mozzarella': 150, 'Masa Pizza': 200 } },
+    { name: 'Pancetta a la Crema', size: 'L', ingredients: { 'Crema': 100, 'Cebolla caramelizada': 80, 'Tocino': 80, 'Mozzarella': 250, 'Masa Grande (L)': 1 } },
+    { name: 'Pancetta a la Crema', size: 'M', ingredients: { 'Crema': 100, 'Cebolla caramelizada': 60, 'Tocino': 60, 'Mozzarella': 200, 'Masa Mediana (M)': 1 } },
+    { name: 'Pancetta a la Crema', size: 'S', ingredients: { 'Crema': 50, 'Cebolla caramelizada': 30, 'Tocino': 30, 'Mozzarella': 150, 'Masa Pequeña (S)': 1 } },
 
     // VEGETARIANA
-    { name: 'Vegetariana', size: 'L', ingredients: { 'Pomodoro': 100, 'Champiñones': 50, 'Pimentones': 50, 'Pesto': 50, 'Aceitunas': 50, 'Choclo': 50, 'Mozzarella': 250, 'Masa Pizza': 450 } },
-    { name: 'Vegetariana', size: 'M', ingredients: { 'Pomodoro': 100, 'Champiñones': 30, 'Pimentones': 30, 'Pesto': 30, 'Aceitunas': 30, 'Choclo': 30, 'Mozzarella': 200, 'Masa Pizza': 300 } },
-    { name: 'Vegetariana', size: 'S', ingredients: { 'Pomodoro': 50, 'Champiñones': 20, 'Pimentones': 20, 'Pesto': 20, 'Aceitunas': 20, 'Choclo': 20, 'Mozzarella': 150, 'Masa Pizza': 200 } },
+    { name: 'Vegetariana', size: 'L', ingredients: { 'Pomodoro': 100, 'Champiñones': 50, 'Pimentones': 50, 'Pesto': 50, 'Aceitunas': 50, 'Choclo': 50, 'Mozzarella': 250, 'Masa Grande (L)': 1 } },
+    { name: 'Vegetariana', size: 'M', ingredients: { 'Pomodoro': 100, 'Champiñones': 30, 'Pimentones': 30, 'Pesto': 30, 'Aceitunas': 30, 'Choclo': 30, 'Mozzarella': 200, 'Masa Mediana (M)': 1 } },
+    { name: 'Vegetariana', size: 'S', ingredients: { 'Pomodoro': 50, 'Champiñones': 20, 'Pimentones': 20, 'Pesto': 20, 'Aceitunas': 20, 'Choclo': 20, 'Mozzarella': 150, 'Masa Pequeña (S)': 1 } },
 
     // VERDE
-    { name: 'Verde', size: 'L', ingredients: { 'Pomodoro o crema': 100, 'Jamón serrano': 80, 'Rúcula (opc.)': 30, 'Masa Pizza': 450 } },
-    { name: 'Verde', size: 'M', ingredients: { 'Pomodoro o crema': 100, 'Jamón serrano': 60, 'Rúcula (opc.)': 20, 'Masa Pizza': 300 } },
-    { name: 'Verde', size: 'S', ingredients: { 'Pomodoro o crema': 50, 'Jamón serrano': 40, 'Rúcula (opc.)': 10, 'Masa Pizza': 200 } },
+    { name: 'Verde', size: 'L', ingredients: { 'Pomodoro o crema': 100, 'Jamón serrano': 80, 'Rúcula (opc.)': 30, 'Masa Grande (L)': 1 } },
+    { name: 'Verde', size: 'M', ingredients: { 'Pomodoro o crema': 100, 'Jamón serrano': 60, 'Rúcula (opc.)': 20, 'Masa Mediana (M)': 1 } },
+    { name: 'Verde', size: 'S', ingredients: { 'Pomodoro o crema': 50, 'Jamón serrano': 40, 'Rúcula (opc.)': 10, 'Masa Pequeña (S)': 1 } },
 
     // MARGARITA
-    { name: 'Margarita', size: 'L', ingredients: { 'Pomodoro': 100, 'Mozzarella': 250, 'Tomates cherry': 100, 'Pesto': 50, 'Masa Pizza': 450 } },
-    { name: 'Margarita', size: 'M', ingredients: { 'Pomodoro': 100, 'Mozzarella': 200, 'Tomates cherry': 80, 'Pesto': 30, 'Masa Pizza': 300 } },
-    { name: 'Margarita', size: 'S', ingredients: { 'Pomodoro': 50, 'Mozzarella': 150, 'Tomates cherry': 60, 'Pesto': 20, 'Masa Pizza': 200 } },
+    { name: 'Margarita', size: 'L', ingredients: { 'Pomodoro': 100, 'Mozzarella': 250, 'Tomates cherry': 100, 'Pesto': 50, 'Masa Grande (L)': 1 } },
+    { name: 'Margarita', size: 'M', ingredients: { 'Pomodoro': 100, 'Mozzarella': 200, 'Tomates cherry': 80, 'Pesto': 30, 'Masa Mediana (M)': 1 } },
+    { name: 'Margarita', size: 'S', ingredients: { 'Pomodoro': 50, 'Mozzarella': 150, 'Tomates cherry': 60, 'Pesto': 20, 'Masa Pequeña (S)': 1 } },
 
     // LA CLÁSICA
-    { name: 'La Clásica', size: 'L', ingredients: { 'Pomodoro': 100, 'Mozzarella': 250, 'Masa Pizza': 450 } },
-    { name: 'La Clásica', size: 'M', ingredients: { 'Pomodoro': 100, 'Mozzarella': 200, 'Masa Pizza': 300 } },
-    { name: 'La Clásica', size: 'S', ingredients: { 'Pomodoro': 50, 'Mozzarella': 150, 'Masa Pizza': 200 } },
+    { name: 'La Clásica', size: 'L', ingredients: { 'Pomodoro': 100, 'Mozzarella': 250, 'Masa Grande (L)': 1 } },
+    { name: 'La Clásica', size: 'M', ingredients: { 'Pomodoro': 100, 'Mozzarella': 200, 'Masa Mediana (M)': 1 } },
+    { name: 'La Clásica', size: 'S', ingredients: { 'Pomodoro': 50, 'Mozzarella': 150, 'Masa Pequeña (S)': 1 } },
   ];
 
   const recipeStmt = db.sqlite.prepare(`
