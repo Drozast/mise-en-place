@@ -1,10 +1,16 @@
 import { useEffect, useState } from 'react';
-import { TrendingUp, Pizza as PizzaIcon, AlertTriangle, Package } from 'lucide-react';
+import { TrendingUp, Pizza as PizzaIcon, AlertTriangle, Package, Clock, PlayCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
+import { useStore } from '../store/useStore';
 
 export default function DashboardNew() {
   const navigate = useNavigate();
+  const user = useStore((state) => state.user);
+  const [currentShift, setCurrentShift] = useState<any>(null);
+  const [showOpenShiftModal, setShowOpenShiftModal] = useState(false);
+  const [shiftType, setShiftType] = useState<'AM' | 'PM'>('AM');
+
   const [stats, setStats] = useState({
     totalVentas: 0,
     masasUsadas: 0,
@@ -27,9 +33,13 @@ export default function DashboardNew() {
   useEffect(() => {
     loadData();
     loadMiseEnPlace();
+    loadCurrentShift();
 
     // Refresh mise en place every 10 seconds
-    const interval = setInterval(loadMiseEnPlace, 10000);
+    const interval = setInterval(() => {
+      loadMiseEnPlace();
+      loadCurrentShift();
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -73,6 +83,16 @@ export default function DashboardNew() {
     }
   };
 
+  const loadCurrentShift = async () => {
+    try {
+      const shift = await api.shifts.getCurrent();
+      setCurrentShift(shift);
+    } catch (error) {
+      console.error('Error loading current shift:', error);
+      setCurrentShift(null);
+    }
+  };
+
   const loadMiseEnPlace = async () => {
     try {
       const response = await fetch('/api/shifts/current/mise-en-place');
@@ -87,6 +107,25 @@ export default function DashboardNew() {
       setMiseEnPlace([]);
     } finally {
       setLoadingMise(false);
+    }
+  };
+
+  const handleOpenShift = async () => {
+    if (!user) return;
+
+    try {
+      await api.shifts.create({
+        date: new Date().toISOString().split('T')[0],
+        type: shiftType,
+        employee_name: user.name,
+        mise_en_place: []
+      });
+
+      setShowOpenShiftModal(false);
+      await loadCurrentShift();
+      alert(`✅ Turno ${shiftType} abierto exitosamente`);
+    } catch (error: any) {
+      alert(error.message || 'Error al abrir turno');
     }
   };
 
@@ -112,6 +151,54 @@ export default function DashboardNew() {
 
   return (
     <div className="space-y-6">
+      {/* Shift Status Banner */}
+      {!currentShift ? (
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 rounded-xl p-6 shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="bg-white/20 p-3 rounded-lg">
+                <Clock className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-1">No hay turno abierto</h2>
+                <p className="text-orange-100">Abre un turno para comenzar a trabajar y registrar ventas</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowOpenShiftModal(true)}
+              className="flex items-center gap-2 px-8 py-4 bg-white hover:bg-gray-100 text-orange-600 rounded-lg font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105"
+            >
+              <PlayCircle className="w-6 h-6" />
+              Abrir Turno
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-xl p-6 shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="bg-white/20 p-3 rounded-lg">
+                <Clock className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-1">
+                  Turno {currentShift.type} Activo
+                </h2>
+                <p className="text-green-100">
+                  {currentShift.employee_name} • Inicio: {new Date(currentShift.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => navigate('/checklist')}
+              className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-gray-100 text-green-600 rounded-lg font-semibold transition-all shadow-lg"
+            >
+              Ver Checklist
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Ventas */}
@@ -348,6 +435,87 @@ export default function DashboardNew() {
           </div>
         )}
       </div>
+
+      {/* Open Shift Modal */}
+      {showOpenShiftModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              Abrir Turno
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
+              Selecciona el tipo de turno que deseas abrir
+            </p>
+
+            <div className="space-y-4 mb-6">
+              <button
+                onClick={() => setShiftType('AM')}
+                className={`w-full p-4 rounded-lg border-2 transition-all ${
+                  shiftType === 'AM'
+                    ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
+                    : 'border-gray-200 dark:border-dark-600 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="text-left">
+                    <p className="font-bold text-gray-900 dark:text-white">Turno AM (Mañana)</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Apertura y preparación del día</p>
+                  </div>
+                  <div className={`w-5 h-5 rounded-full border-2 ${
+                    shiftType === 'AM'
+                      ? 'border-orange-500 bg-orange-500'
+                      : 'border-gray-300 dark:border-dark-600'
+                  }`}>
+                    {shiftType === 'AM' && (
+                      <div className="w-full h-full flex items-center justify-center text-white text-xs">✓</div>
+                    )}
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setShiftType('PM')}
+                className={`w-full p-4 rounded-lg border-2 transition-all ${
+                  shiftType === 'PM'
+                    ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
+                    : 'border-gray-200 dark:border-dark-600 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="text-left">
+                    <p className="font-bold text-gray-900 dark:text-white">Turno PM (Tarde)</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Servicio de tarde y cierre</p>
+                  </div>
+                  <div className={`w-5 h-5 rounded-full border-2 ${
+                    shiftType === 'PM'
+                      ? 'border-orange-500 bg-orange-500'
+                      : 'border-gray-300 dark:border-dark-600'
+                  }`}>
+                    {shiftType === 'PM' && (
+                      <div className="w-full h-full flex items-center justify-center text-white text-xs">✓</div>
+                    )}
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleOpenShift}
+                className="flex-1 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors"
+              >
+                Abrir Turno {shiftType}
+              </button>
+              <button
+                onClick={() => setShowOpenShiftModal(false)}
+                className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
