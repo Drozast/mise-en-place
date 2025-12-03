@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { useStore } from '../store/useStore';
 import { Plus, RefreshCw, Trash2, Edit } from 'lucide-react';
+import { getSocket } from '../lib/socket';
 
 export default function IngredientsNew() {
   const { ingredients, setIngredients } = useStore();
@@ -15,6 +16,29 @@ export default function IngredientsNew() {
 
   useEffect(() => {
     loadIngredients();
+
+    // Set up socket listeners for real-time updates
+    const socket = getSocket();
+
+    socket.on('ingredient:updated', (updatedIngredient) => {
+      setIngredients((prev: any[]) =>
+        prev.map((ing) => (ing.id === updatedIngredient.id ? updatedIngredient : ing))
+      );
+    });
+
+    socket.on('ingredient:created', () => {
+      loadIngredients();
+    });
+
+    socket.on('ingredient:deleted', (deletedId) => {
+      setIngredients((prev: any[]) => prev.filter((ing) => ing.id !== deletedId));
+    });
+
+    return () => {
+      socket.off('ingredient:updated');
+      socket.off('ingredient:created');
+      socket.off('ingredient:deleted');
+    };
   }, []);
 
   const loadIngredients = async () => {

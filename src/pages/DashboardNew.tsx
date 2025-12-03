@@ -3,6 +3,7 @@ import { TrendingUp, Pizza as PizzaIcon, AlertTriangle, Package, Clock, PlayCirc
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useStore } from '../store/useStore';
+import { getSocket } from '../lib/socket';
 
 export default function DashboardNew() {
   const navigate = useNavigate();
@@ -35,12 +36,49 @@ export default function DashboardNew() {
     loadMiseEnPlace();
     loadCurrentShift();
 
-    // Refresh mise en place every 10 seconds
+    // Set up socket listeners for real-time updates
+    const socket = getSocket();
+
+    socket.on('sale:registered', () => {
+      loadData();
+      loadMiseEnPlace();
+    });
+
+    socket.on('ingredient:updated', () => {
+      loadMiseEnPlace();
+    });
+
+    socket.on('mise:updated', () => {
+      loadMiseEnPlace();
+    });
+
+    socket.on('shift:opened', () => {
+      loadCurrentShift();
+    });
+
+    socket.on('shift:closed', () => {
+      loadCurrentShift();
+    });
+
+    socket.on('alert:created', () => {
+      loadData();
+    });
+
+    // Refresh mise en place every 30 seconds (reduced from 10 since we have real-time updates)
     const interval = setInterval(() => {
       loadMiseEnPlace();
       loadCurrentShift();
-    }, 10000);
-    return () => clearInterval(interval);
+    }, 30000);
+
+    return () => {
+      socket.off('sale:registered');
+      socket.off('ingredient:updated');
+      socket.off('mise:updated');
+      socket.off('shift:opened');
+      socket.off('shift:closed');
+      socket.off('alert:created');
+      clearInterval(interval);
+    };
   }, []);
 
   const loadData = async () => {

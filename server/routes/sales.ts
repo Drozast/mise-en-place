@@ -68,6 +68,32 @@ router.post('/', (req: Request, res: Response) => {
       const totalDeduction = ing.quantity * quantity;
       updateMiseStmt.run(totalDeduction, shift_id, ing.ingredient_id);
 
+      // Also update the main ingredients table (Inventario Real)
+      const ingredient = db.sqlite.prepare('SELECT * FROM ingredients WHERE id = ?').get(ing.ingredient_id) as any;
+
+      if (ingredient) {
+        // Deduct from current_quantity
+        const newCurrentQuantity = Math.max(0, (ingredient.current_quantity || 0) - totalDeduction);
+        const newPercentage = ingredient.total_quantity > 0
+          ? Math.round((newCurrentQuantity / ingredient.total_quantity) * 100)
+          : 0;
+
+        db.sqlite.prepare(`
+          UPDATE ingredients
+          SET current_quantity = ?,
+              current_percentage = ?,
+              updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `).run(newCurrentQuantity, newPercentage, ing.ingredient_id);
+
+        // Get updated ingredient for socket emission
+        const updatedIngredient = db.sqlite.prepare('SELECT * FROM ingredients WHERE id = ?').get(ing.ingredient_id);
+        io.emit('ingredient:updated', updatedIngredient);
+
+        // Check if alert needed for main inventory
+        checkAndCreateAlert(updatedIngredient as Ingredient, io);
+      }
+
       // Get updated mise en place status
       const updatedMise = db.sqlite.prepare(`
         SELECT
