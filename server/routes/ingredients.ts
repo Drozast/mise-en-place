@@ -75,16 +75,60 @@ router.post('/', (req: Request, res: Response) => {
 router.put('/:id', (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, unit, category, critical_threshold, warning_threshold, current_percentage } = req.body;
+    const { name, unit, category, critical_threshold, warning_threshold, current_percentage, total_quantity, current_quantity } = req.body;
+
+    // Build dynamic update query based on provided fields
+    const updates: string[] = [];
+    const values: any[] = [];
+
+    if (name !== undefined) {
+      updates.push('name = ?');
+      values.push(name);
+    }
+    if (unit !== undefined) {
+      updates.push('unit = ?');
+      values.push(unit);
+    }
+    if (category !== undefined) {
+      updates.push('category = ?');
+      values.push(category);
+    }
+    if (critical_threshold !== undefined) {
+      updates.push('critical_threshold = ?');
+      values.push(critical_threshold);
+    }
+    if (warning_threshold !== undefined) {
+      updates.push('warning_threshold = ?');
+      values.push(warning_threshold);
+    }
+    if (total_quantity !== undefined) {
+      updates.push('total_quantity = ?');
+      values.push(total_quantity);
+    }
+    if (current_quantity !== undefined) {
+      updates.push('current_quantity = ?');
+      values.push(current_quantity);
+    }
+    if (current_percentage !== undefined) {
+      updates.push('current_percentage = ?');
+      values.push(current_percentage);
+    } else if (total_quantity !== undefined && current_quantity !== undefined) {
+      // Auto-calculate percentage if both quantities provided
+      const percentage = Math.round((current_quantity / total_quantity) * 100);
+      updates.push('current_percentage = ?');
+      values.push(percentage);
+    }
+
+    updates.push('updated_at = CURRENT_TIMESTAMP');
+    values.push(id);
 
     const stmt = db.sqlite.prepare(`
       UPDATE ingredients
-      SET name = ?, unit = ?, category = ?, critical_threshold = ?,
-          warning_threshold = ?, current_percentage = ?, updated_at = CURRENT_TIMESTAMP
+      SET ${updates.join(', ')}
       WHERE id = ?
     `);
 
-    stmt.run(name, unit, category, critical_threshold, warning_threshold, current_percentage, id);
+    stmt.run(...values);
 
     const updated = db.sqlite.prepare('SELECT * FROM ingredients WHERE id = ?').get(id);
 
@@ -97,6 +141,7 @@ router.put('/:id', (req: Request, res: Response) => {
 
     res.json(updated);
   } catch (error) {
+    console.error('Error updating ingredient:', error);
     res.status(500).json({ error: 'Error al actualizar ingrediente' });
   }
 });
