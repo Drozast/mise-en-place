@@ -57,7 +57,15 @@ export default function IngredientsNew() {
   }
 
   // Separar masas del resto de ingredientes
-  const masas = ingredients.filter((i) => i.category === 'masas');
+  const masas = ingredients
+    .filter((i) => i.category === 'masas')
+    .sort((a, b) => {
+      // Ordenar: L (Grande) -> M (Mediana) -> S (Pequeña)
+      const order: any = { 'L': 1, 'M': 2, 'S': 3 };
+      const sizeA = a.name.includes('(L)') ? 'L' : a.name.includes('(M)') ? 'M' : 'S';
+      const sizeB = b.name.includes('(L)') ? 'L' : b.name.includes('(M)') ? 'M' : 'S';
+      return order[sizeA] - order[sizeB];
+    });
   const otherIngredients = ingredients.filter((i) => i.category !== 'masas');
   const otherCategories = [...new Set(otherIngredients.map((i) => i.category))];
 
@@ -95,13 +103,40 @@ export default function IngredientsNew() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             {masas.map((masa) => {
               const cantidad = masa.current_quantity || Math.round((masa.current_percentage / 100) * (masa.total_quantity || 20));
+              const maxCantidad = masa.total_quantity || 20;
+              const percentage = masa.current_percentage || Math.round((cantidad / maxCantidad) * 100);
+
+              // Determinar color según disponibilidad
+              let colorClass = 'text-green-600 dark:text-green-400';
+              if (percentage < 30) colorClass = 'text-red-600 dark:text-red-400';
+              else if (percentage < 50) colorClass = 'text-orange-600 dark:text-orange-400';
+              else if (percentage < 70) colorClass = 'text-yellow-600 dark:text-yellow-400';
+
               return (
-                <div key={masa.id} className="bg-gray-50 dark:bg-dark-800/50 border border-gray-200 dark:border-gray-700/50 rounded-lg p-6 text-center">
-                  <div className="text-5xl font-bold text-green-600 dark:text-green-400 mb-2">
+                <div key={masa.id} className="bg-gray-50 dark:bg-dark-800/50 border border-gray-200 dark:border-gray-700/50 rounded-lg p-6 text-center hover:border-orange-500 dark:hover:border-orange-500/50 transition-colors">
+                  <div className={`text-6xl font-bold ${colorClass} mb-2`}>
                     {cantidad}
                   </div>
-                  <div className="text-gray-700 dark:text-gray-400 text-sm">
+                  <div className="text-gray-700 dark:text-gray-400 text-sm font-semibold mb-1">
                     {masa.name}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-500">
+                    Máximo: {maxCantidad} {masa.unit}
+                  </div>
+                  <div className="mt-3">
+                    <div className="w-full bg-gray-200 dark:bg-dark-700 rounded-full h-2">
+                      <div
+                        className={`h-2 rounded-full transition-all ${
+                          percentage < 30 ? 'bg-red-500' :
+                          percentage < 50 ? 'bg-orange-500' :
+                          percentage < 70 ? 'bg-yellow-500' : 'bg-green-500'
+                        }`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      {percentage}%
+                    </div>
                   </div>
                 </div>
               );
