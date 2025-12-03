@@ -46,13 +46,50 @@ router.post('/', (req: Request, res: Response) => {
   try {
     const { shift_id, recipe_id, quantity } = req.body;
 
+    // Get recipe name for error messages
+    const recipe = db.sqlite.prepare('SELECT name FROM recipes WHERE id = ?').get(recipe_id) as any;
+
     // Get recipe ingredients with their quantities
     const recipeIngredients = db.sqlite.prepare(`
-      SELECT ri.*, i.name, i.unit
+      SELECT ri.*, i.name, i.unit, i.current_quantity, i.total_quantity, i.current_percentage
       FROM recipe_ingredients ri
       JOIN ingredients i ON ri.ingredient_id = i.id
       WHERE ri.recipe_id = ?
     `).all(recipe_id) as any[];
+
+    // Validate ingredient availability BEFORE making any changes
+    const missingIngredients: string[] = [];
+    const lowIngredients: string[] = [];
+
+    for (const ing of recipeIngredients) {
+      const totalRequired = ing.quantity * quantity;
+      const currentQuantity = ing.current_quantity || 0;
+      const percentage = ing.current_percentage || 0;
+
+      // Check if ingredient is completely out of stock
+      if (currentQuantity <= 0 || currentQuantity < totalRequired) {
+        missingIngredients.push(ing.name);
+      }
+      // Check if ingredient is running low (20% or less) but still available
+      else if (percentage <= 20) {
+        lowIngredients.push(`${ing.name} (${percentage}% restante)`);
+      }
+    }
+
+    // If any ingredients are missing, reject the sale
+    if (missingIngredients.length > 0) {
+      return res.status(400).json({
+        error: `No se puede vender ${recipe.name}: falta ${missingIngredients.join(', ')}`,
+        type: 'missing_ingredients',
+        ingredients: missingIngredients
+      });
+    }
+
+    // If ingredients are low but available, include warning in response
+    let warning = null;
+    if (lowIngredients.length > 0) {
+      warning = `⚠️ Ingredientes bajos: ${lowIngredients.join(', ')}`;
+    }
 
     // Update mise en place for current shift (deduct ingredients)
     const updateMiseStmt = db.sqlite.prepare(`
@@ -159,7 +196,13 @@ router.post('/', (req: Request, res: Response) => {
 
     io.emit('sale:registered', newSale);
 
-    res.status(201).json(newSale);
+    // Include warning in response if ingredients are low
+    const response: any = { sale: newSale };
+    if (warning) {
+      response.warning = warning;
+    }
+
+    res.status(201).json(response);
   } catch (error) {
     console.error('Error registering sale:', error);
     res.status(500).json({ error: 'Error al registrar venta' });

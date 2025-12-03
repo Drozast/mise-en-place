@@ -80,11 +80,16 @@ export default function SalesNew() {
         return;
       }
 
-      await api.sales.create({
+      const response = await api.sales.create({
         shift_id: currentShift.id,
         recipe_id: recipe.id,
         quantity: formData.quantity,
       });
+
+      // Show warning if ingredients are low
+      if (response.warning) {
+        alert(response.warning);
+      }
 
       // Reset form
       setFormData({
@@ -96,7 +101,9 @@ export default function SalesNew() {
       // Reload data
       await loadData();
     } catch (error: any) {
-      alert(error.message || 'Error al registrar venta');
+      // Extract error message from API response
+      const errorMessage = error.message || 'Error al registrar venta';
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
