@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { Clock, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Clock, Check, AlertCircle } from 'lucide-react';
+import { api } from '../lib/api';
 
 interface ChecklistItem {
-  id: string;
-  text: string;
-  completed: boolean;
+  id: number;
+  task_name: string;
+  completed: number;
+  completed_at?: string;
 }
 
 interface ChecklistSection {
@@ -13,81 +15,133 @@ interface ChecklistSection {
 }
 
 export default function ChecklistNew() {
-  const [turno, setTurno] = useState<'AM' | 'PM'>('AM');
-  const [sections, setSections] = useState<ChecklistSection[]>([
-    {
-      title: 'Apertura',
-      items: [
-        { id: 'ap1', text: 'Encender todos los equipos (hornos, refrigeradores)', completed: true },
-        { id: 'ap2', text: 'Verificar temperatura de refrigeradores y congeladores', completed: true },
-        { id: 'ap3', text: 'Revisar inventario de ingredientes críticos', completed: true },
-        { id: 'ap4', text: 'Preparar estaciones de trabajo', completed: true },
-      ],
-    },
-    {
-      title: 'Preparación',
-      items: [
-        { id: 'pr1', text: 'Preparar masas del día', completed: true },
-        { id: 'pr2', text: 'Cortar vegetales frescos', completed: true },
-        { id: 'pr3', text: 'Preparar salsas', completed: true },
-        { id: 'pr4', text: 'Organizar ingredientes en estaciones', completed: true },
-        { id: 'pr5', text: 'Preparar quesos (rallar, porcionar)', completed: true },
-        { id: 'pr6', text: 'Preparar carnes y embutidos', completed: true },
-        { id: 'pr7', text: 'Verificar stock de cajas y empaques', completed: true },
-        { id: 'pr8', text: 'Preparar ingredientes especiales del día', completed: true },
-      ],
-    },
-    {
-      title: 'Limpieza',
-      items: [
-        { id: 'li1', text: 'Limpiar y desinfectar superficies de trabajo', completed: true },
-        { id: 'li2', text: 'Limpiar equipos de cocina', completed: true },
-        { id: 'li3', text: 'Barrer y trapear pisos', completed: true },
-        { id: 'li4', text: 'Sacar basura', completed: true },
-      ],
-    },
-    {
-      title: 'Seguridad e Higiene',
-      items: [
-        { id: 'sh1', text: 'Verificar fecha de vencimiento de productos', completed: true },
-        { id: 'sh2', text: 'Lavar y desinfectar contenedores de ingredientes', completed: true },
-        { id: 'sh3', text: 'Revisar que todo el personal tenga uniforme limpio', completed: true },
-        { id: 'sh4', text: 'Verificar botiquín de primeros auxilios', completed: true },
-      ],
-    },
-    {
-      title: 'Organización',
-      items: [
-        { id: 'or1', text: 'Revisar stock de bebidas', completed: true },
-        { id: 'or2', text: 'Verificar suministros de limpieza', completed: true },
-      ],
-    },
-  ]);
+  const [currentShift, setCurrentShift] = useState<any>(null);
+  const [sections, setSections] = useState<ChecklistSection[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showSignModal, setShowSignModal] = useState(false);
+  const [signForm, setSignForm] = useState({ rut: '', password: '' });
+  const [signError, setSignError] = useState('');
+  const [signing, setSigning] = useState(false);
 
-  const toggleItem = (sectionIndex: number, itemId: string) => {
-    setSections((prev) =>
-      prev.map((section, idx) => {
-        if (idx === sectionIndex) {
-          return {
-            ...section,
-            items: section.items.map((item) =>
-              item.id === itemId ? { ...item, completed: !item.completed } : item
-            ),
-          };
-        }
-        return section;
-      })
-    );
+  useEffect(() => {
+    loadCurrentShift();
+  }, []);
+
+  const loadCurrentShift = async () => {
+    try {
+      const shift = await api.shifts.getCurrent();
+
+      if (!shift) {
+        setCurrentShift(null);
+        setSections([]);
+        return;
+      }
+
+      setCurrentShift(shift);
+
+      // Group tasks into sections
+      const tasks = shift.tasks || [];
+      const grouped: ChecklistSection[] = [
+        { title: 'Apertura', items: tasks.slice(0, 4) },
+        { title: 'Preparación', items: tasks.slice(4, 12) },
+        { title: 'Limpieza', items: tasks.slice(12, 16) },
+        { title: 'Seguridad e Higiene', items: tasks.slice(16, 20) },
+        { title: 'Organización', items: tasks.slice(20, 22) },
+      ];
+
+      setSections(grouped);
+    } catch (error) {
+      console.error('Error loading shift:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleTask = async (taskId: number, currentStatus: number) => {
+    if (!currentShift || currentShift.checklist_signed) return;
+
+    try {
+      await fetch(`/api/shifts/${currentShift.id}/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: !currentStatus }),
+      });
+
+      // Reload shift to get updated data
+      await loadCurrentShift();
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
+  };
+
+  const handleSignClick = () => {
+    setShowSignModal(true);
+    setSignError('');
+    setSignForm({ rut: '', password: '' });
+  };
+
+  const handleSignSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSigning(true);
+    setSignError('');
+
+    try {
+      const response = await fetch(`/api/shifts/${currentShift.id}/sign-checklist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(signForm),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setSignError(data.error || 'Error al firmar checklist');
+        setSigning(false);
+        return;
+      }
+
+      // Success!
+      setShowSignModal(false);
+      await loadCurrentShift();
+      alert(`✅ ${data.message}`);
+    } catch (error) {
+      setSignError('Error de conexión al firmar checklist');
+      setSigning(false);
+    }
   };
 
   const totalTasks = sections.reduce((sum, section) => sum + section.items.length, 0);
   const completedTasks = sections.reduce(
-    (sum, section) => sum + section.items.filter((item) => item.completed).length,
+    (sum, section) => sum + section.items.filter((item) => item.completed === 1).length,
     0
   );
-  const progressPercentage = Math.round((completedTasks / totalTasks) * 100);
+  const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  const allCompleted = completedTasks === totalTasks && totalTasks > 0;
+  const isSigned = currentShift?.checklist_signed === 1;
 
-  const allCompleted = completedTasks === totalTasks;
+  if (loading) {
+    return <div className="text-center py-12 text-gray-600 dark:text-dark-300">Cargando...</div>;
+  }
+
+  if (!currentShift) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <AlertCircle className="w-20 h-20 text-gray-400 mb-4" />
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          No hay turno abierto
+        </h2>
+        <p className="text-gray-600 dark:text-dark-400 mb-6">
+          Debes abrir un turno para ver el checklist
+        </p>
+        <button
+          onClick={() => window.location.href = '/'}
+          className="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition-colors"
+        >
+          Ir al Dashboard
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -102,6 +156,12 @@ export default function ChecklistNew() {
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Checklist</h1>
             </div>
             <p className="text-gray-600 dark:text-gray-400">Protocolo de cocina - Pizzería Di Lauvice</p>
+            {isSigned && (
+              <p className="text-green-600 dark:text-green-400 text-sm font-semibold mt-2">
+                ✓ Firmado por {currentShift.checklist_signed_by} el{' '}
+                {new Date(currentShift.checklist_signed_at).toLocaleString('es-ES')}
+              </p>
+            )}
           </div>
           <div className="text-right">
             <div className="text-4xl font-bold text-orange-600 dark:text-orange-400 mb-1">
@@ -114,7 +174,9 @@ export default function ChecklistNew() {
         {/* Turno Selector */}
         <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-600/30 rounded-lg p-4 mb-4 flex items-center justify-center gap-2">
           <Clock className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-          <span className="text-orange-600 dark:text-orange-400 font-semibold">Turno {turno}</span>
+          <span className="text-orange-600 dark:text-orange-400 font-semibold">
+            Turno {currentShift.type} - {currentShift.employee_name}
+          </span>
         </div>
 
         {/* Progress Bar */}
@@ -131,20 +193,30 @@ export default function ChecklistNew() {
         </div>
 
         {/* Firmar Button */}
-        {allCompleted && (
-          <button className="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+        {allCompleted && !isSigned && (
+          <button
+            onClick={handleSignClick}
+            className="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
             <Check className="w-5 h-5" />
             Firmar Checklist Completado
           </button>
+        )}
+
+        {isSigned && (
+          <div className="w-full py-4 bg-green-100 dark:bg-green-900/30 border-2 border-green-500 text-green-800 dark:text-green-300 font-bold rounded-lg flex items-center justify-center gap-2">
+            <Check className="w-5 h-5" />
+            Checklist Firmado y Completado
+          </div>
         )}
       </div>
 
       {/* Checklist Sections */}
       <div className="space-y-6">
         {sections.map((section, sectionIndex) => {
-          const sectionCompleted = section.items.filter((item) => item.completed).length;
+          const sectionCompleted = section.items.filter((item) => item.completed === 1).length;
           const sectionTotal = section.items.length;
-          const sectionProgress = Math.round((sectionCompleted / sectionTotal) * 100);
+          const sectionProgress = sectionTotal > 0 ? Math.round((sectionCompleted / sectionTotal) * 100) : 0;
 
           return (
             <div
@@ -171,29 +243,24 @@ export default function ChecklistNew() {
                 {section.items.map((item) => (
                   <button
                     key={item.id}
-                    onClick={() => toggleItem(sectionIndex, item.id)}
+                    onClick={() => toggleTask(item.id, item.completed)}
+                    disabled={isSigned}
                     className={`w-full flex items-center gap-4 p-4 rounded-lg border transition-all ${
                       item.completed
                         ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-600/30 text-gray-500 dark:text-gray-400'
                         : 'bg-gray-50 dark:bg-dark-800/50 border-gray-200 dark:border-gray-700/50 text-gray-900 dark:text-white hover:border-orange-500 dark:hover:border-orange-500/50'
-                    }`}
+                    } ${isSigned ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'}`}
                   >
                     <div
                       className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
                         item.completed
-                          ? 'bg-green-600 border-green-600'
-                          : 'border-gray-600'
+                          ? 'border-green-500 bg-green-500'
+                          : 'border-gray-300 dark:border-gray-600'
                       }`}
                     >
-                      {item.completed && <Check className="w-4 h-4 text-white" />}
+                      {item.completed ? <Check className="w-4 h-4 text-white" /> : null}
                     </div>
-                    <span
-                      className={`text-left flex-1 ${
-                        item.completed ? 'line-through' : ''
-                      }`}
-                    >
-                      {item.text}
-                    </span>
+                    <span className="flex-1 text-left font-medium">{item.task_name}</span>
                   </button>
                 ))}
               </div>
@@ -201,6 +268,74 @@ export default function ChecklistNew() {
           );
         })}
       </div>
+
+      {/* Sign Modal */}
+      {showSignModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              Firmar Checklist
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
+              Solo el Chef o Administrador puede firmar el checklist completado.
+            </p>
+
+            {signError && (
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg text-red-800 dark:text-red-300 text-sm">
+                {signError}
+              </div>
+            )}
+
+            <form onSubmit={handleSignSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+                  RUT del Chef/Admin
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="11111111-1"
+                  className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors"
+                  value={signForm.rut}
+                  onChange={(e) => setSignForm({ ...signForm, rut: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+                  Contraseña
+                </label>
+                <input
+                  type="password"
+                  required
+                  placeholder="••••"
+                  className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors"
+                  value={signForm.password}
+                  onChange={(e) => setSignForm({ ...signForm, password: e.target.value })}
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  disabled={signing}
+                  className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold rounded-lg transition-colors"
+                >
+                  {signing ? 'Firmando...' : 'Firmar Checklist'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowSignModal(false)}
+                  disabled={signing}
+                  className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

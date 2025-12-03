@@ -4,21 +4,35 @@ import { Shift, ShiftTask } from '../types/index.js';
 
 const router = Router();
 
-// Default tasks for each shift type
-const DEFAULT_AM_TASKS = [
-  'Preparar masa del día',
-  'Cortar ingredientes frescos',
-  'Revisar stock de mise en place',
-  'Limpiar área de trabajo',
-  'Precalentar hornos',
-];
-
-const DEFAULT_PM_TASKS = [
-  'Revisar niveles de ingredientes',
-  'Reponer mise en place según alertas',
-  'Limpiar mesas y área de servicio',
-  'Verificar temperatura de refrigeradores',
-  'Preparar cierre',
+// Default tasks for all shifts (22 tasks total)
+const DEFAULT_TASKS = [
+  // Apertura (4)
+  'Encender todos los equipos (hornos, refrigeradores)',
+  'Verificar temperatura de refrigeradores y congeladores',
+  'Revisar inventario de ingredientes críticos',
+  'Preparar estaciones de trabajo',
+  // Preparación (8)
+  'Preparar masas del día',
+  'Cortar vegetales frescos',
+  'Preparar salsas',
+  'Organizar ingredientes en estaciones',
+  'Preparar quesos (rallar, porcionar)',
+  'Preparar carnes y embutidos',
+  'Verificar stock de cajas y empaques',
+  'Preparar ingredientes especiales del día',
+  // Limpieza (4)
+  'Limpiar y desinfectar superficies de trabajo',
+  'Limpiar equipos de cocina',
+  'Barrer y trapear pisos',
+  'Sacar basura',
+  // Seguridad e Higiene (4)
+  'Verificar fecha de vencimiento de productos',
+  'Lavar y desinfectar contenedores de ingredientes',
+  'Revisar que todo el personal tenga uniforme limpio',
+  'Verificar botiquín de primeros auxilios',
+  // Organización (2)
+  'Revisar stock de bebidas',
+  'Verificar suministros de limpieza',
 ];
 
 // GET all shifts
@@ -102,14 +116,13 @@ router.post('/', (req: Request, res: Response) => {
     const result = stmt.run(date, type, employee_name);
     const shiftId = result.lastInsertRowid;
 
-    // Add default tasks
-    const tasks = type === 'AM' ? DEFAULT_AM_TASKS : DEFAULT_PM_TASKS;
+    // Add default tasks (all 22 tasks, starting unchecked)
     const taskStmt = db.sqlite.prepare(`
-      INSERT INTO shift_tasks (shift_id, task_name)
-      VALUES (?, ?)
+      INSERT INTO shift_tasks (shift_id, task_name, completed)
+      VALUES (?, ?, 0)
     `);
 
-    for (const task of tasks) {
+    for (const task of DEFAULT_TASKS) {
       taskStmt.run(shiftId, task);
     }
 
@@ -388,6 +401,76 @@ router.put('/current/mise-en-place/:ingredientId/restock', (req: Request, res: R
   } catch (error) {
     console.error('Error restocking ingredient:', error);
     res.status(500).json({ error: 'Error al reponer ingrediente' });
+  }
+});
+
+// POST sign checklist (requires chef/admin auth)
+router.post('/:id/sign-checklist', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { rut, password } = req.body;
+
+    if (!rut || !password) {
+      return res.status(400).json({ error: 'RUT y contraseña son requeridos' });
+    }
+
+    // Verify chef/admin credentials
+    const user = db.sqlite.prepare(`
+      SELECT * FROM users
+      WHERE rut = ? AND password = ? AND role = 'chef' AND active = 1
+    `).get(rut, password);
+
+    if (!user) {
+      return res.status(401).json({ error: 'Credenciales inválidas o no tienes permisos de Chef/Admin' });
+    }
+
+    // Get shift
+    const shift = db.sqlite.prepare('SELECT * FROM shifts WHERE id = ?').get(id) as any;
+
+    if (!shift) {
+      return res.status(404).json({ error: 'Turno no encontrado' });
+    }
+
+    if (shift.checklist_signed) {
+      return res.status(400).json({ error: 'El checklist ya fue firmado' });
+    }
+
+    // Verify all tasks are completed
+    const tasks = db.sqlite.prepare('SELECT * FROM shift_tasks WHERE shift_id = ?').all(id) as any[];
+    const incompleteTasks = tasks.filter((t: any) => !t.completed);
+
+    if (incompleteTasks.length > 0) {
+      return res.status(400).json({
+        error: 'No se puede firmar el checklist. Hay tareas pendientes.',
+        incomplete_tasks: incompleteTasks.map((t: any) => t.task_name)
+      });
+    }
+
+    // Sign the checklist
+    const stmt = db.sqlite.prepare(`
+      UPDATE shifts
+      SET checklist_signed = 1,
+          checklist_signed_by = ?,
+          checklist_signed_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `);
+
+    stmt.run((user as any).name, id);
+
+    const updated = db.sqlite.prepare('SELECT * FROM shifts WHERE id = ?').get(id);
+
+    // Emit update via socket
+    const io = req.app.get('io');
+    io.emit('checklist:signed', updated);
+
+    res.json({
+      success: true,
+      message: `Checklist firmado por ${(user as any).name}`,
+      shift: updated
+    });
+  } catch (error) {
+    console.error('Error signing checklist:', error);
+    res.status(500).json({ error: 'Error al firmar checklist' });
   }
 });
 

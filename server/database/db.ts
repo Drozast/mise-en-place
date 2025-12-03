@@ -84,6 +84,9 @@ const initialize = () => {
       start_time DATETIME NOT NULL,
       end_time DATETIME,
       status TEXT DEFAULT 'open' CHECK(status IN ('open', 'closed')),
+      checklist_signed INTEGER DEFAULT 0,
+      checklist_signed_by TEXT,
+      checklist_signed_at DATETIME,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
@@ -280,6 +283,22 @@ const initialize = () => {
     }
   } catch (error) {
     console.error('Error en migración de current_quantity:', error);
+  }
+
+  // Migración: Agregar campos de firma de checklist a shifts
+  try {
+    const columns = sqlite.pragma('table_info(shifts)');
+    const hasChecklistSigned = columns.some((col: any) => col.name === 'checklist_signed');
+    if (!hasChecklistSigned) {
+      sqlite.exec(`
+        ALTER TABLE shifts ADD COLUMN checklist_signed INTEGER DEFAULT 0;
+        ALTER TABLE shifts ADD COLUMN checklist_signed_by TEXT;
+        ALTER TABLE shifts ADD COLUMN checklist_signed_at DATETIME;
+      `);
+      console.log('✅ Campos de firma de checklist agregados a la tabla shifts');
+    }
+  } catch (error) {
+    console.error('Error en migración de checklist_signed:', error);
   }
 
   console.log('✅ Base de datos inicializada correctamente');
