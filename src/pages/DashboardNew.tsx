@@ -221,17 +221,28 @@ export default function DashboardNew() {
           onClick={() => navigate('/pizzas')}
           className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
         >
-          <div className="flex items-start justify-between mb-4">
+          <div className="flex items-start justify-between mb-3">
             <div className="text-sm text-gray-600 dark:text-dark-400 group-hover:text-orange-400 transition-colors">Masas Usadas</div>
             <div className="p-2 bg-gray-100 dark:bg-dark-700 rounded-lg group-hover:bg-orange-500/10 transition-colors">
               <PizzaIcon className="w-5 h-5 text-orange-500 group-hover:text-orange-400 transition-colors" />
             </div>
           </div>
-          <div className="text-4xl font-bold text-gray-900 dark:text-white mb-1">
-            {stats.masasUsadas}/{stats.masasDisponibles}
+          <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            {stats.masasUsadas}
           </div>
-          <div className="text-xs text-gray-600 dark:text-dark-400 group-hover:text-gray-700 dark:group-hover:text-dark-300 transition-colors">
-            {Math.round((stats.masasUsadas / stats.masasDisponibles) * 100)}% utilizadas
+          <div className="space-y-1 text-xs text-gray-600 dark:text-dark-400">
+            <div className="flex justify-between">
+              <span>L:</span>
+              <span className="font-semibold">{ventasPorTamano.L.count}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>M:</span>
+              <span className="font-semibold">{ventasPorTamano.M.count}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>S:</span>
+              <span className="font-semibold">{ventasPorTamano.S.count}</span>
+            </div>
           </div>
         </div>
 
