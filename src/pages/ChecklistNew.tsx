@@ -120,17 +120,17 @@ export default function ChecklistNew() {
   const isSigned = currentShift?.checklist_signed === 1;
 
   if (loading) {
-    return <div className="text-center py-12 text-gray-600 dark:text-dark-300">Cargando...</div>;
+    return <div className="text-center py-12 text-gray-600">Cargando...</div>;
   }
 
   if (!currentShift) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <AlertCircle className="w-20 h-20 text-gray-400 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
           No hay turno abierto
         </h2>
-        <p className="text-gray-600 dark:text-dark-400 mb-6">
+        <p className="text-gray-600 mb-6">
           Debes abrir un turno para ver el checklist
         </p>
         <button
@@ -146,48 +146,48 @@ export default function ChecklistNew() {
   return (
     <div className="space-y-6">
       {/* Header Card */}
-      <div className="bg-white dark:bg-dark-800/90 border border-gray-200 dark:border-dark-700/50 rounded-2xl p-6 shadow-xl">
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xl">
         <div className="flex justify-between items-start mb-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="bg-orange-100 dark:bg-orange-600/20 p-2 rounded-lg">
-                <Check className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+              <div className="bg-orange-100 p-2 rounded-lg">
+                <Check className="w-6 h-6 text-orange-600" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Checklist</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Checklist</h1>
             </div>
-            <p className="text-gray-600 dark:text-gray-400">Protocolo de cocina - Pizzería Di Lauvice</p>
+            <p className="text-gray-600">Protocolo de cocina - Pizzería Di Lauvice</p>
             {isSigned && (
-              <p className="text-green-600 dark:text-green-400 text-sm font-semibold mt-2">
+              <p className="text-green-600 text-sm font-semibold mt-2">
                 ✓ Firmado por {currentShift.checklist_signed_by} el{' '}
                 {new Date(currentShift.checklist_signed_at).toLocaleString('es-ES')}
               </p>
             )}
           </div>
           <div className="text-right">
-            <div className="text-4xl font-bold text-orange-600 dark:text-orange-400 mb-1">
+            <div className="text-4xl font-bold text-orange-600 mb-1">
               {completedTasks}/{totalTasks}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Tareas completadas</div>
+            <div className="text-sm text-gray-600">Tareas completadas</div>
           </div>
         </div>
 
         {/* Turno Selector */}
-        <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-600/30 rounded-lg p-4 mb-4 flex items-center justify-center gap-2">
-          <Clock className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-          <span className="text-orange-600 dark:text-orange-400 font-semibold">
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4 flex items-center justify-center gap-2">
+          <Clock className="w-5 h-5 text-orange-600" />
+          <span className="text-orange-600 font-semibold">
             Turno {currentShift.type} - {currentShift.employee_name}
           </span>
         </div>
 
         {/* Progress Bar */}
         <div className="mb-4">
-          <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-3 overflow-hidden">
+          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-orange-600 via-yellow-500 to-green-500"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
-          <div className="text-center text-gray-900 dark:text-white font-semibold mt-2">
+          <div className="text-center text-gray-900 font-semibold mt-2">
             {progressPercentage}% completado
           </div>
         </div>
@@ -204,7 +204,7 @@ export default function ChecklistNew() {
         )}
 
         {isSigned && (
-          <div className="w-full py-4 bg-green-100 dark:bg-green-900/30 border-2 border-green-500 text-green-800 dark:text-green-300 font-bold rounded-lg flex items-center justify-center gap-2">
+          <div className="w-full py-4 bg-green-100 border-2 border-green-500 text-green-800 font-bold rounded-lg flex items-center justify-center gap-2">
             <Check className="w-5 h-5" />
             Checklist Firmado y Completado
           </div>
@@ -221,17 +221,17 @@ export default function ChecklistNew() {
           return (
             <div
               key={section.title}
-              className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-700/50 rounded-xl p-6 shadow-lg"
+              className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg"
             >
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-orange-600 dark:text-orange-400">{section.title}</h2>
-                <span className="text-gray-900 dark:text-white font-semibold">
+                <h2 className="text-xl font-bold text-orange-600">{section.title}</h2>
+                <span className="text-gray-900 font-semibold">
                   {sectionCompleted}/{sectionTotal}
                 </span>
               </div>
 
               {/* Section Progress Bar */}
-              <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2 mb-4 overflow-hidden">
+              <div className="w-full bg-gray-200 rounded-full h-2 mb-4 overflow-hidden">
                 <div
                   className="h-full rounded-full bg-orange-600 transition-all duration-300"
                   style={{ width: `${sectionProgress}%` }}
@@ -247,15 +247,15 @@ export default function ChecklistNew() {
                     disabled={isSigned}
                     className={`w-full flex items-center gap-4 p-4 rounded-lg border transition-all ${
                       item.completed
-                        ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-600/30 text-gray-500 dark:text-gray-400'
-                        : 'bg-gray-50 dark:bg-dark-800/50 border-gray-200 dark:border-gray-700/50 text-gray-900 dark:text-white hover:border-orange-500 dark:hover:border-orange-500/50'
+                        ? 'bg-green-50 border-green-300 text-gray-500'
+                        : 'bg-gray-50 border-gray-200 text-gray-900 hover:border-orange-500'
                     } ${isSigned ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'}`}
                   >
                     <div
                       className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
                         item.completed
                           ? 'border-green-500 bg-green-500'
-                          : 'border-gray-300 dark:border-gray-600'
+                          : 'border-gray-300'
                       }`}
                     >
                       {item.completed ? <Check className="w-4 h-4 text-white" /> : null}
@@ -272,44 +272,44 @@ export default function ChecklistNew() {
       {/* Sign Modal */}
       {showSignModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Firmar Checklist
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
+            <p className="text-gray-600 mb-6 text-sm">
               Solo el Chef o Administrador puede firmar el checklist completado.
             </p>
 
             {signError && (
-              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg text-red-800 dark:text-red-300 text-sm">
+              <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded-lg text-red-800 text-sm">
                 {signError}
               </div>
             )}
 
             <form onSubmit={handleSignSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   RUT del Chef/Admin
                 </label>
                 <input
                   type="text"
                   required
                   placeholder="11111111-1"
-                  className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors"
+                  className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-orange-500 transition-colors"
                   value={signForm.rut}
                   onChange={(e) => setSignForm({ ...signForm, rut: e.target.value })}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Contraseña
                 </label>
                 <input
                   type="password"
                   required
                   placeholder="••••"
-                  className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors"
+                  className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-orange-500 transition-colors"
                   value={signForm.password}
                   onChange={(e) => setSignForm({ ...signForm, password: e.target.value })}
                 />
@@ -327,7 +327,7 @@ export default function ChecklistNew() {
                   type="button"
                   onClick={() => setShowSignModal(false)}
                   disabled={signing}
-                  className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
+                  className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold rounded-lg transition-colors"
                 >
                   Cancelar
                 </button>

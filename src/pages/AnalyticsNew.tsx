@@ -98,92 +98,92 @@ export default function AnalyticsNew() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analytics</h1>
+      <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
 
       {/* Status Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-dark-800/80 border-2 border-green-500 dark:border-green-600 rounded-xl p-6 shadow-lg">
+        <div className="bg-white border-2 border-green-500 rounded-xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600 dark:text-dark-400">
+            <h3 className="text-sm font-medium text-gray-600">
               Óptimo
             </h3>
             <TrendingUp className="w-5 h-5 text-green-500" />
           </div>
-          <p className="text-4xl font-bold text-green-600 dark:text-green-500">
+          <p className="text-4xl font-bold text-green-600">
             {statusCounts.optimal}
           </p>
-          <p className="text-sm text-gray-500 dark:text-dark-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Ingredientes
           </p>
         </div>
 
-        <div className="bg-white dark:bg-dark-800/80 border-2 border-yellow-500 dark:border-yellow-600 rounded-xl p-6 shadow-lg">
+        <div className="bg-white border-2 border-yellow-500 rounded-xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600 dark:text-dark-400">
+            <h3 className="text-sm font-medium text-gray-600">
               Medio
             </h3>
             <Minus className="w-5 h-5 text-yellow-500" />
           </div>
-          <p className="text-4xl font-bold text-yellow-600 dark:text-yellow-500">
+          <p className="text-4xl font-bold text-yellow-600">
             {statusCounts.medium}
           </p>
-          <p className="text-sm text-gray-500 dark:text-dark-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Ingredientes
           </p>
         </div>
 
-        <div className="bg-white dark:bg-dark-800/80 border-2 border-orange-500 dark:border-orange-600 rounded-xl p-6 shadow-lg">
+        <div className="bg-white border-2 border-orange-500 rounded-xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600 dark:text-dark-400">
+            <h3 className="text-sm font-medium text-gray-600">
               Bajo
             </h3>
             <TrendingDown className="w-5 h-5 text-orange-500" />
           </div>
-          <p className="text-4xl font-bold text-orange-600 dark:text-orange-500">
+          <p className="text-4xl font-bold text-orange-600">
             {statusCounts.low}
           </p>
-          <p className="text-sm text-gray-500 dark:text-dark-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Ingredientes
           </p>
         </div>
 
-        <div className="bg-white dark:bg-dark-800/80 border-2 border-red-500 dark:border-red-600 rounded-xl p-6 shadow-lg">
+        <div className="bg-white border-2 border-red-500 rounded-xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600 dark:text-dark-400">
+            <h3 className="text-sm font-medium text-gray-600">
               Crítico
             </h3>
             <TrendingDown className="w-5 h-5 text-red-500" />
           </div>
-          <p className="text-4xl font-bold text-red-600 dark:text-red-500">
+          <p className="text-4xl font-bold text-red-600">
             {statusCounts.critical}
           </p>
-          <p className="text-sm text-gray-500 dark:text-dark-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Ingredientes
           </p>
         </div>
       </div>
 
       {/* Consumo Total */}
-      <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+        <h2 className="text-xl font-bold text-gray-900 mb-6">
           Consumo Total
         </h2>
 
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm text-gray-600 dark:text-dark-400">
+              <p className="text-sm text-gray-600">
                 Preparado
               </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-2xl font-bold text-gray-900">
                 {consumptionData.total_prepared}g
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-600 dark:text-dark-400">
+              <p className="text-sm text-gray-600">
                 Consumido
               </p>
-              <p className="text-2xl font-bold text-orange-600 dark:text-orange-500">
+              <p className="text-2xl font-bold text-orange-600">
                 {consumptionData.total_consumed}g
               </p>
             </div>
@@ -191,14 +191,14 @@ export default function AnalyticsNew() {
 
           <div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-gray-700 dark:text-dark-300">
+              <span className="text-sm font-medium text-gray-700">
                 Progreso de consumo
               </span>
-              <span className="text-sm font-bold text-gray-900 dark:text-white">
+              <span className="text-sm font-bold text-gray-900">
                 {consumptionData.consumption_percentage}%
               </span>
             </div>
-            <div className="w-full bg-gray-200 dark:bg-dark-700 rounded-full h-4">
+            <div className="w-full bg-gray-200 rounded-full h-4">
               <div
                 className="bg-orange-500 h-4 rounded-full transition-all"
                 style={{ width: `${consumptionData.consumption_percentage}%` }}
@@ -211,8 +211,8 @@ export default function AnalyticsNew() {
       {/* Two columns: Análisis por Tipo & Top 5 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Análisis por Tipo */}
-        <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">
             Análisis por Tipo
           </h2>
 
@@ -221,18 +221,18 @@ export default function AnalyticsNew() {
               <div key={category} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-orange-500" />
-                  <span className="text-sm font-medium text-gray-900 dark:text-white capitalize">
+                  <span className="text-sm font-medium text-gray-900 capitalize">
                     {category}
                   </span>
                 </div>
-                <span className="text-lg font-bold text-gray-900 dark:text-white">
+                <span className="text-lg font-bold text-gray-900">
                   {count}
                 </span>
               </div>
             ))}
 
             {Object.keys(categoryCounts).length === 0 && (
-              <p className="text-center text-gray-500 dark:text-dark-400 py-8">
+              <p className="text-center text-gray-500 py-8">
                 No hay datos disponibles
               </p>
             )}
@@ -240,8 +240,8 @@ export default function AnalyticsNew() {
         </div>
 
         {/* Top 5 Más Consumidos */}
-        <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">
             Top 5 Más Consumidos
           </h2>
 
@@ -250,23 +250,23 @@ export default function AnalyticsNew() {
               <div key={item.ingredient_name}>
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex items-center gap-3">
-                    <span className="text-lg font-bold text-orange-600 dark:text-orange-500">
+                    <span className="text-lg font-bold text-orange-600">
                       #{index + 1}
                     </span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-sm font-medium text-gray-900">
                       {item.ingredient_name}
                     </span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">
+                    <p className="text-sm font-bold text-gray-900">
                       {item.total_consumed}g
                     </p>
-                    <p className="text-xs text-gray-600 dark:text-dark-400">
+                    <p className="text-xs text-gray-600">
                       {item.percentage}%
                     </p>
                   </div>
                 </div>
-                <div className="w-full bg-gray-200 dark:bg-dark-700 rounded-full h-2">
+                <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className="bg-orange-500 h-2 rounded-full transition-all"
                     style={{ width: `${item.percentage}%` }}
@@ -276,7 +276,7 @@ export default function AnalyticsNew() {
             ))}
 
             {topConsumption.length === 0 && (
-              <p className="text-center text-gray-500 dark:text-dark-400 py-8">
+              <p className="text-center text-gray-500 py-8">
                 No hay datos de consumo
               </p>
             )}

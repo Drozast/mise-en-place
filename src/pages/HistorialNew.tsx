@@ -63,50 +63,50 @@ export default function HistorialNew() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Historial</h1>
+      <h1 className="text-3xl font-bold text-gray-900">Historial</h1>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
-          <h3 className="text-sm font-medium text-gray-600 dark:text-dark-400 mb-2">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+          <h3 className="text-sm font-medium text-gray-600 mb-2">
             Total Transacciones
           </h3>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+          <p className="text-3xl font-bold text-gray-900">
             {totalTransactions}
           </p>
-          <p className="text-sm text-gray-500 dark:text-dark-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             {totalTransactions === 1 ? '1 registro' : `${totalTransactions} registros`}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
-          <h3 className="text-sm font-medium text-gray-600 dark:text-dark-400 mb-2">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+          <h3 className="text-sm font-medium text-gray-600 mb-2">
             Alertas Resueltas
           </h3>
-          <p className="text-3xl font-bold text-green-600 dark:text-green-500">
+          <p className="text-3xl font-bold text-green-600">
             {resolvedAlerts}
           </p>
-          <p className="text-sm text-gray-500 dark:text-dark-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             {resolvedAlerts === 1 ? '1 reposición completada' : `${resolvedAlerts} reposiciones completadas`}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
-          <h3 className="text-sm font-medium text-gray-600 dark:text-dark-400 mb-2">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+          <h3 className="text-sm font-medium text-gray-600 mb-2">
             Alertas Pendientes
           </h3>
-          <p className="text-3xl font-bold text-orange-600 dark:text-orange-500">
+          <p className="text-3xl font-bold text-orange-600">
             {pendingAlerts}
           </p>
-          <p className="text-sm text-gray-500 dark:text-dark-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             {pendingAlerts === 1 ? '1 por resolver' : `${pendingAlerts} por resolver`}
           </p>
         </div>
       </div>
 
       {/* Actividad por Hora */}
-      <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+        <h2 className="text-xl font-bold text-gray-900 mb-6">
           Actividad por Hora
         </h2>
 
@@ -116,10 +116,10 @@ export default function HistorialNew() {
               .filter(hour => salesByHour[hour])
               .map(hour => (
                 <div key={hour} className="flex items-center gap-4">
-                  <span className="text-sm font-medium text-gray-700 dark:text-dark-300 w-20">
+                  <span className="text-sm font-medium text-gray-700 w-20">
                     {hour.toString().padStart(2, '0')}:00
                   </span>
-                  <div className="flex-1 bg-gray-200 dark:bg-dark-700 rounded-full h-8">
+                  <div className="flex-1 bg-gray-200 rounded-full h-8">
                     <div
                       className="bg-orange-500 h-8 rounded-full flex items-center justify-end px-3"
                       style={{
@@ -136,7 +136,7 @@ export default function HistorialNew() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-dark-400">
+            <p className="text-gray-500">
               No hay actividad registrada hoy
             </p>
           </div>
@@ -144,8 +144,8 @@ export default function HistorialNew() {
       </div>
 
       {/* Últimas Ventas */}
-      <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+        <h2 className="text-xl font-bold text-gray-900 mb-6">
           Últimas Ventas
         </h2>
 
@@ -154,20 +154,20 @@ export default function HistorialNew() {
             {sales.slice(0, 10).map((sale) => (
               <div
                 key={sale.id}
-                className="flex justify-between items-center p-4 bg-gray-50 dark:bg-dark-900/50 border border-gray-200 dark:border-dark-700/50 rounded-lg"
+                className="flex justify-between items-center p-4 bg-gray-50 border border-gray-200 rounded-lg"
               >
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">
+                  <p className="font-semibold text-gray-900">
                     {sale.recipe_name} {sale.size ? `(${sale.size})` : ''}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-dark-400">
+                  <p className="text-sm text-gray-600">
                     {new Date(sale.timestamp).toLocaleTimeString('es-ES', {
                       hour: '2-digit',
                       minute: '2-digit'
                     })}
                   </p>
                 </div>
-                <span className="text-xl font-bold text-gray-900 dark:text-white">
+                <span className="text-xl font-bold text-gray-900">
                   ×{sale.quantity}
                 </span>
               </div>
@@ -175,7 +175,7 @@ export default function HistorialNew() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-dark-400">
+            <p className="text-gray-500">
               No hay ventas registradas hoy
             </p>
           </div>
@@ -183,8 +183,8 @@ export default function HistorialNew() {
       </div>
 
       {/* Historial de Alertas */}
-      <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+        <h2 className="text-xl font-bold text-gray-900 mb-6">
           Historial de Alertas
         </h2>
 
@@ -193,23 +193,23 @@ export default function HistorialNew() {
             {alerts.map((alert) => (
               <div
                 key={alert.id}
-                className="flex justify-between items-center p-4 bg-gray-50 dark:bg-dark-900/50 border border-gray-200 dark:border-dark-700/50 rounded-lg"
+                className="flex justify-between items-center p-4 bg-gray-50 border border-gray-200 rounded-lg"
               >
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">
+                  <p className="font-semibold text-gray-900">
                     {alert.ingredient_name}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-dark-400">
+                  <p className="text-sm text-gray-600">
                     Nivel: {alert.current_percentage}%
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-dark-500">
+                  <p className="text-xs text-gray-500">
                     {new Date(alert.created_at).toLocaleString('es-ES')}
                   </p>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
                   alert.resolved
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    : 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-orange-100 text-orange-800'
                 }`}>
                   {alert.resolved ? 'Resuelta' : 'Pendiente'}
                 </span>
@@ -218,7 +218,7 @@ export default function HistorialNew() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-dark-400">
+            <p className="text-gray-500">
               No hay alertas registradas
             </p>
           </div>

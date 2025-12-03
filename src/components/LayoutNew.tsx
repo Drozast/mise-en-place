@@ -8,8 +8,6 @@ import {
   CheckSquare,
   LogOut,
   Users,
-  Sun,
-  Moon,
   Gift
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
@@ -30,8 +28,6 @@ export default function LayoutNew() {
   const navigate = useNavigate();
   const user = useStore((state) => state.user);
   const logout = useStore((state) => state.logout);
-  const isDarkMode = useStore((state) => state.isDarkMode);
-  const toggleDarkMode = useStore((state) => state.toggleDarkMode);
 
   const handleLogout = () => {
     logout();
@@ -39,22 +35,22 @@ export default function LayoutNew() {
   };
 
   return (
-    <div className="min-h-screen bg-background dark:bg-background-dark text-text-secondary dark:text-gray-300 transition-colors">
+    <div className="min-h-screen bg-gray-50 text-gray-700">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-900 border-b border-border dark:border-gray-800 shadow-sm transition-colors">
+      <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="px-6 py-4 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold font-heading">
-              <span className="text-text-primary dark:text-white">Sistema de</span>{' '}
-              <span className="text-primary dark:text-primary">Mise en Place</span>
+            <h1 className="text-2xl font-bold">
+              <span className="text-gray-900">Sistema de</span>{' '}
+              <span className="text-orange-600">Mise en Place</span>
             </h1>
-            <p className="text-sm text-text-secondary dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 mt-1">
               Control de inventario y ventas en tiempo real
               {user && (
                 <span className="ml-3">
-                  • <span className="text-text-primary dark:text-gray-200">{user.name}</span>
+                  • <span className="text-gray-900">{user.name}</span>
                   {user.role === 'chef' && (
-                    <span className="ml-2 px-2 py-0.5 bg-primary-dark text-white text-xs rounded font-heading">
+                    <span className="ml-2 px-2 py-0.5 bg-orange-600 text-white text-xs rounded">
                       Admin
                     </span>
                   )}
@@ -62,22 +58,13 @@ export default function LayoutNew() {
               )}
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={toggleDarkMode}
-              className="flex items-center gap-2 px-4 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-text-primary dark:text-white rounded-lg font-bold transition-all shadow-md hover:shadow-lg font-heading"
-              title={isDarkMode ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
-            >
-              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-lg font-bold transition-all shadow-md hover:shadow-lg font-heading"
-            >
-              <LogOut className="w-5 h-5" />
-              Cerrar Sesión
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-bold transition-all shadow-md hover:shadow-lg"
+          >
+            <LogOut className="w-5 h-5" />
+            Cerrar Sesión
+          </button>
         </div>
 
         {/* Navigation */}
@@ -93,8 +80,8 @@ export default function LayoutNew() {
                   to={item.path}
                   className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
                     isActive
-                      ? 'border-primary text-primary dark:text-primary'
-                      : 'border-transparent text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-200'
+                      ? 'border-orange-600 text-orange-600'
+                      : 'border-transparent text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -109,8 +96,8 @@ export default function LayoutNew() {
                 to="/usuarios"
                 className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
                   location.pathname === '/usuarios'
-                    ? 'border-primary text-primary dark:text-primary'
-                    : 'border-transparent text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-200'
+                    ? 'border-orange-600 text-orange-600'
+                    : 'border-transparent text-gray-600 hover:text-gray-900'
                 }`}
               >
                 <Users className="w-4 h-4" />

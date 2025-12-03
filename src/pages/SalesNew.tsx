@@ -111,15 +111,15 @@ export default function SalesNew() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Registro de Ventas</h1>
+      <h1 className="text-3xl font-bold text-gray-900">Registro de Ventas</h1>
 
       {/* Registrar Venta Form */}
-      <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Registrar Venta</h2>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+        <h2 className="text-xl font-bold text-gray-900 mb-6">Registrar Venta</h2>
 
         {!currentShift ? (
           <div className="text-center py-8">
-            <p className="text-gray-600 dark:text-dark-400 mb-4">
+            <p className="text-gray-600 mb-4">
               No hay un turno abierto. Debes abrir un turno para registrar ventas.
             </p>
             <button
@@ -132,11 +132,11 @@ export default function SalesNew() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Pizza
               </label>
               <select
-                className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors"
+                className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-orange-500 transition-colors"
                 value={formData.recipe_name}
                 onChange={(e) => setFormData({ ...formData, recipe_name: e.target.value })}
                 required
@@ -151,11 +151,11 @@ export default function SalesNew() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Tamaño
               </label>
               <select
-                className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors"
+                className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-orange-500 transition-colors"
                 value={formData.size}
                 onChange={(e) => setFormData({ ...formData, size: e.target.value })}
                 required
@@ -167,14 +167,14 @@ export default function SalesNew() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Cantidad
               </label>
               <input
                 type="number"
                 min="1"
                 required
-                className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors"
+                className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-orange-500 transition-colors"
                 value={formData.quantity}
                 onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
               />
@@ -192,28 +192,28 @@ export default function SalesNew() {
       </div>
 
       {/* Historial de Ventas */}
-      <div className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-xl p-6 shadow-lg">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Historial de Ventas</h2>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+        <h2 className="text-xl font-bold text-gray-900 mb-6">Historial de Ventas</h2>
 
         {sales.length > 0 ? (
           <div className="space-y-3">
             {sales.map((sale) => (
               <div
                 key={sale.id}
-                className="flex justify-between items-center p-4 bg-gray-50 dark:bg-dark-900/50 border border-gray-200 dark:border-dark-700/50 rounded-lg"
+                className="flex justify-between items-center p-4 bg-gray-50 border border-gray-200 rounded-lg"
               >
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">
+                  <p className="font-semibold text-gray-900">
                     {sale.recipe_name} {sale.size ? `(${sale.size})` : ''}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-dark-400">
+                  <p className="text-sm text-gray-600">
                     {new Date(sale.timestamp).toLocaleTimeString('es-ES', {
                       hour: '2-digit',
                       minute: '2-digit'
                     })}
                   </p>
                 </div>
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                <span className="text-2xl font-bold text-gray-900">
                   ×{sale.quantity}
                 </span>
               </div>
@@ -221,7 +221,7 @@ export default function SalesNew() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-dark-400">
+            <p className="text-gray-500">
               {currentShift
                 ? 'No hay ventas registradas hoy'
                 : 'Abre un turno para comenzar a registrar ventas'

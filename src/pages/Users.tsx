@@ -62,19 +62,19 @@ export default function Users() {
   if (user?.role !== 'chef') {
     return (
       <div className="text-center py-12">
-        <p className="text-xl text-gray-600 dark:text-dark-400">No tienes permisos para acceder a esta página</p>
+        <p className="text-xl text-gray-600">No tienes permisos para acceder a esta página</p>
       </div>
     );
   }
 
   if (loading) {
-    return <div className="text-center py-12 text-gray-600 dark:text-dark-400">Cargando...</div>;
+    return <div className="text-center py-12 text-gray-600">Cargando...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Usuarios</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Gestión de Usuarios</h1>
         <button
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition-colors"
@@ -84,13 +84,13 @@ export default function Users() {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
         <div className="space-y-3">
           {users.map((u) => (
             <div
               key={u.id}
-              className={`flex items-center gap-4 p-4 bg-gray-100 dark:bg-dark-900 border rounded-lg transition-colors ${
-                u.active ? 'border-gray-200 dark:border-dark-700' : 'border-gray-300 dark:border-dark-800 opacity-60'
+              className={`flex items-center gap-4 p-4 bg-gray-100 border rounded-lg transition-colors ${
+                u.active ? 'border-gray-200' : 'border-gray-300 opacity-60'
               }`}
             >
               <div className="flex-1">
@@ -100,7 +100,7 @@ export default function Users() {
                   ) : (
                     <UserIcon className="w-5 h-5 text-blue-500" />
                   )}
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{u.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{u.name}</h3>
                   <span
                     className={`px-2 py-1 rounded text-xs font-semibold ${
                       u.role === 'chef'
@@ -116,7 +116,7 @@ export default function Users() {
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-dark-400">
+                <div className="flex items-center gap-4 text-sm text-gray-600">
                   <span>RUT: {u.rut}</span>
                   {u.last_login && (
                     <span>
@@ -209,35 +209,35 @@ function CreateUserModal({ onClose, onSuccess }: any) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-lg">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Nuevo Usuario</h2>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 w-full max-w-md shadow-lg">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Nuevo Usuario</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">RUT</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">RUT</label>
             <input
               type="text"
               required
               placeholder="12345678-9"
-              className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-dark-500 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.rut}
               onChange={handleRutChange}
               maxLength={10}
               autoComplete="off"
             />
-            <p className="text-xs text-gray-600 dark:text-dark-500 mt-1">
+            <p className="text-xs text-gray-600 mt-1">
               La contraseña será los primeros 4 dígitos del RUT
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Nombre Completo
             </label>
             <input
               type="text"
               required
               placeholder="Juan Pérez"
-              className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-dark-500 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               autoComplete="off"
@@ -245,9 +245,9 @@ function CreateUserModal({ onClose, onSuccess }: any) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">Rol</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Rol</label>
             <select
-              className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.role}
               onChange={(e) =>
                 setFormData({ ...formData, role: e.target.value as 'empleado' | 'chef' })
@@ -268,7 +268,7 @@ function CreateUserModal({ onClose, onSuccess }: any) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
+              className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold rounded-lg transition-colors"
             >
               Cancelar
             </button>

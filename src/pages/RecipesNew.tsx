@@ -63,11 +63,11 @@ export default function RecipesNew() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'green': return 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30';
-      case 'yellow': return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30';
-      case 'orange': return 'text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30';
-      case 'red': return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30';
-      default: return 'text-gray-600 dark:text-dark-400 bg-gray-100 dark:bg-gray-900/30';
+      case 'green': return 'text-green-600 bg-green-100';
+      case 'yellow': return 'text-yellow-600 bg-yellow-100';
+      case 'orange': return 'text-orange-600 bg-orange-100';
+      case 'red': return 'text-red-600 bg-red-100';
+      default: return 'text-gray-600 bg-gray-100';
     }
   };
 
@@ -114,14 +114,14 @@ export default function RecipesNew() {
   const tablas = recipes.filter((r) => r.type === 'tabla');
 
   if (loading) {
-    return <div className="text-center py-12 text-gray-600 dark:text-dark-300">Cargando...</div>;
+    return <div className="text-center py-12 text-gray-600">Cargando...</div>;
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
           🍕 Menú por Categorías
         </h1>
         <button
@@ -134,11 +134,11 @@ export default function RecipesNew() {
       </div>
 
       {/* Tab de Pizzas */}
-      <div className="bg-orange-50 dark:bg-dark-800/50 border border-orange-200 dark:border-orange-600/30 rounded-lg p-2 inline-block">
-        <span className="px-4 py-2 bg-orange-600/20 text-orange-600 dark:text-orange-400 rounded font-semibold text-sm">
+      <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 inline-block">
+        <span className="px-4 py-2 bg-orange-600/20 text-orange-600 rounded font-semibold text-sm">
           PIZZAS
         </span>
-        <span className="ml-2 text-gray-600 dark:text-dark-400 text-sm">
+        <span className="ml-2 text-gray-600 text-sm">
           {Object.keys(pizzasByName).length} pizzas
         </span>
       </div>
@@ -151,10 +151,10 @@ export default function RecipesNew() {
             <div
               key={name}
               onClick={() => setSelectedPizza({ name, pizzas })}
-              className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-lg p-5 hover:border-orange-500 dark:hover:border-orange-600/50 hover:shadow-md transition-all cursor-pointer"
+              className="bg-white border border-gray-200 rounded-lg p-5 hover:border-orange-500 hover:shadow-md transition-all cursor-pointer"
             >
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{name}</h3>
-              <p className="text-gray-600 dark:text-dark-400 text-sm">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{name}</h3>
+              <p className="text-gray-600 text-sm">
                 {uniqueIngredients} ingredientes
               </p>
             </div>
@@ -165,11 +165,11 @@ export default function RecipesNew() {
       {/* Tablas */}
       {tablas.length > 0 && (
         <div className="mt-8">
-          <div className="bg-orange-50 dark:bg-dark-800/50 border border-orange-200 dark:border-orange-600/30 rounded-lg p-2 inline-block mb-4">
-            <span className="px-4 py-2 bg-orange-600/20 text-orange-600 dark:text-orange-400 rounded font-semibold text-sm">
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 inline-block mb-4">
+            <span className="px-4 py-2 bg-orange-600/20 text-orange-600 rounded font-semibold text-sm">
               TABLAS
             </span>
-            <span className="ml-2 text-gray-600 dark:text-dark-400 text-sm">
+            <span className="ml-2 text-gray-600 text-sm">
               {tablas.length} tablas
             </span>
           </div>
@@ -178,12 +178,12 @@ export default function RecipesNew() {
             {tablas.map((tabla) => (
               <div
                 key={tabla.id}
-                className="bg-white dark:bg-dark-800/80 border border-gray-200 dark:border-dark-600/50 rounded-lg p-5"
+                className="bg-white border border-gray-200 rounded-lg p-5"
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{tabla.name}</h3>
-                    <p className="text-gray-600 dark:text-dark-400 text-sm">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{tabla.name}</h3>
+                    <p className="text-gray-600 text-sm">
                       {tabla.ingredients?.length || 0} ingredientes
                     </p>
                   </div>
@@ -330,7 +330,7 @@ function PizzaDetailModal({ pizza, miseEnPlace, getMiseStatus, getStatusColor, g
           </div>
 
           {/* Botones de acción */}
-          <div className="mt-6 pt-6 border-t border-gray-700 dark:border-dark-600 flex gap-3">
+          <div className="mt-6 pt-6 border-t border-gray-700 flex gap-3">
             {pizzas.map((p: any) => (
               <button
                 key={p.id}

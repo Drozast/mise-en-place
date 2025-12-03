@@ -45,7 +45,7 @@ export default function RewardsNew() {
   };
 
   if (loading) {
-    return <div className="text-center py-12 text-gray-600 dark:text-dark-300">Cargando...</div>;
+    return <div className="text-center py-12 text-gray-600">Cargando...</div>;
   }
 
   return (
@@ -53,11 +53,11 @@ export default function RewardsNew() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
             <Trophy className="w-8 h-8 text-orange-500" />
             Premios y Recompensas
           </h1>
-          <p className="text-gray-600 dark:text-dark-400 mt-2">
+          <p className="text-gray-600 mt-2">
             {isAdmin
               ? 'Motiva a tu equipo agregando premios y recompensas por cumplir objetivos'
               : 'Cumple tus objetivos y gana increíbles premios'}
@@ -83,7 +83,7 @@ export default function RewardsNew() {
           {rewards.map((reward) => (
             <div
               key={reward.id}
-              className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-lg hover:scale-105 transition-transform"
+              className="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-lg hover:scale-105 transition-transform"
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="text-5xl">{reward.icon}</div>
@@ -104,15 +104,15 @@ export default function RewardsNew() {
                   </div>
                 )}
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 {reward.title}
               </h3>
-              <p className="text-gray-600 dark:text-dark-400 text-sm">
+              <p className="text-gray-600 text-sm">
                 {reward.description}
               </p>
               {isAdmin && (
-                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-dark-700">
-                  <p className="text-xs text-gray-500 dark:text-dark-500">
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <p className="text-xs text-gray-500">
                     Creado por: {reward.created_by}
                   </p>
                 </div>
@@ -121,12 +121,12 @@ export default function RewardsNew() {
           ))}
         </div>
       ) : (
-        <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-12 text-center shadow-lg">
-          <Gift className="w-20 h-20 text-gray-300 dark:text-dark-600 mx-auto mb-6" />
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <div className="bg-gray-50 border border-gray-200 rounded-xl p-12 text-center shadow-lg">
+          <Gift className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">
             {isAdmin ? 'No hay premios configurados' : 'Aún no hay premios disponibles'}
           </h2>
-          <p className="text-gray-600 dark:text-dark-400 mb-8 max-w-md mx-auto">
+          <p className="text-gray-600 mb-8 max-w-md mx-auto">
             {isAdmin
               ? 'Comienza a motivar a tu equipo agregando premios y recompensas'
               : 'Pronto habrá premios increíbles esperándote'}
@@ -198,13 +198,13 @@ function RewardModal({ reward, onClose, onSuccess, userName }: RewardModalProps)
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 w-full max-w-md shadow-2xl">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
           {reward ? 'Editar Premio' : 'Nuevo Premio'}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Icono
             </label>
             <div className="grid grid-cols-5 gap-2">
@@ -215,8 +215,8 @@ function RewardModal({ reward, onClose, onSuccess, userName }: RewardModalProps)
                   onClick={() => setFormData({ ...formData, icon: emoji })}
                   className={`text-3xl p-3 rounded-lg border-2 transition-all ${
                     formData.icon === emoji
-                      ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20 scale-110'
-                      : 'border-gray-300 dark:border-dark-600 hover:border-orange-300'
+                      ? 'border-orange-500 bg-orange-50 scale-110'
+                      : 'border-gray-300 hover:border-orange-300'
                   }`}
                 >
                   {emoji}
@@ -226,14 +226,14 @@ function RewardModal({ reward, onClose, onSuccess, userName }: RewardModalProps)
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Título del Premio
             </label>
             <input
               type="text"
               required
               placeholder="Ej: 2 Pizzas Familiares"
-              className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-dark-500 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+              className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               autoComplete="off"
@@ -241,14 +241,14 @@ function RewardModal({ reward, onClose, onSuccess, userName }: RewardModalProps)
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Descripción
             </label>
             <textarea
               required
               rows={3}
               placeholder="Describe el premio y cómo ganarlo"
-              className="w-full bg-white dark:bg-dark-700 border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-dark-500 focus:outline-none focus:border-orange-500 transition-colors font-medium resize-none"
+              className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors font-medium resize-none"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
@@ -264,7 +264,7 @@ function RewardModal({ reward, onClose, onSuccess, userName }: RewardModalProps)
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
+              className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold rounded-lg transition-colors"
             >
               Cancelar
             </button>

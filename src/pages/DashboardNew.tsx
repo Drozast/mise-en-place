@@ -191,7 +191,7 @@ export default function DashboardNew() {
     <div className="space-y-6">
       {/* Shift Status Banner */}
       {!currentShift ? (
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 rounded-xl p-6 shadow-lg">
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="bg-white/20 p-3 rounded-lg">
@@ -212,7 +212,7 @@ export default function DashboardNew() {
           </div>
         </div>
       ) : (
-        <div className="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-xl p-6 shadow-lg">
+        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="bg-white/20 p-3 rounded-lg">
@@ -242,33 +242,33 @@ export default function DashboardNew() {
         {/* Total Ventas */}
         <div
           onClick={() => navigate('/ventas')}
-          className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
+          className="bg-white border border-gray-200 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
         >
           <div className="flex items-start justify-between mb-4">
-            <div className="text-sm text-gray-600 dark:text-dark-400 group-hover:text-orange-400 transition-colors">Total Ventas</div>
-            <div className="p-2 bg-gray-100 dark:bg-dark-700 rounded-lg group-hover:bg-orange-500/10 transition-colors">
+            <div className="text-sm text-gray-600 group-hover:text-orange-400 transition-colors">Total Ventas</div>
+            <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-orange-500/10 transition-colors">
               <TrendingUp className="w-5 h-5 text-green-500 group-hover:text-green-400 transition-colors" />
             </div>
           </div>
-          <div className="text-4xl font-bold text-gray-900 dark:text-white mb-1">{stats.totalVentas}</div>
-          <div className="text-xs text-gray-600 dark:text-dark-400 group-hover:text-gray-700 dark:group-hover:text-dark-300 transition-colors">Pizzas vendidas hoy</div>
+          <div className="text-4xl font-bold text-gray-900 mb-1">{stats.totalVentas}</div>
+          <div className="text-xs text-gray-600 group-hover:text-gray-700 transition-colors">Pizzas vendidas hoy</div>
         </div>
 
         {/* Masas Usadas */}
         <div
           onClick={() => navigate('/pizzas')}
-          className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
+          className="bg-white border border-gray-200 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
         >
           <div className="flex items-start justify-between mb-3">
-            <div className="text-sm text-gray-600 dark:text-dark-400 group-hover:text-orange-400 transition-colors">Masas Usadas</div>
-            <div className="p-2 bg-gray-100 dark:bg-dark-700 rounded-lg group-hover:bg-orange-500/10 transition-colors">
+            <div className="text-sm text-gray-600 group-hover:text-orange-400 transition-colors">Masas Usadas</div>
+            <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-orange-500/10 transition-colors">
               <PizzaIcon className="w-5 h-5 text-orange-500 group-hover:text-orange-400 transition-colors" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <div className="text-3xl font-bold text-gray-900 mb-2">
             {stats.masasUsadas}
           </div>
-          <div className="space-y-1 text-xs text-gray-600 dark:text-dark-400">
+          <div className="space-y-1 text-xs text-gray-600">
             <div className="flex justify-between">
               <span>L:</span>
               <span className="font-semibold">{ventasPorTamano.L.count}</span>
@@ -287,16 +287,16 @@ export default function DashboardNew() {
         {/* Alertas Activas */}
         <div
           onClick={() => navigate('/lista-compras')}
-          className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
+          className="bg-white border border-gray-200 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
         >
           <div className="flex items-start justify-between mb-4">
-            <div className="text-sm text-gray-600 dark:text-dark-400 group-hover:text-orange-400 transition-colors">Alertas Activas</div>
-            <div className="p-2 bg-gray-100 dark:bg-dark-700 rounded-lg group-hover:bg-orange-500/10 transition-colors">
+            <div className="text-sm text-gray-600 group-hover:text-orange-400 transition-colors">Alertas Activas</div>
+            <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-orange-500/10 transition-colors">
               <AlertTriangle className="w-5 h-5 text-yellow-500 group-hover:text-yellow-400 transition-colors" />
             </div>
           </div>
-          <div className="text-4xl font-bold text-gray-900 dark:text-white mb-1">{stats.alertasActivas}</div>
-          <div className="text-xs text-gray-600 dark:text-dark-400 group-hover:text-gray-700 dark:group-hover:text-dark-300 transition-colors">
+          <div className="text-4xl font-bold text-gray-900 mb-1">{stats.alertasActivas}</div>
+          <div className="text-xs text-gray-600 group-hover:text-gray-700 transition-colors">
             {stats.alertasCriticas} críticos, {stats.alertasBajas} bajos
           </div>
         </div>
@@ -304,39 +304,39 @@ export default function DashboardNew() {
         {/* Estado Inventario */}
         <div
           onClick={() => navigate('/inventario')}
-          className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
+          className="bg-white border border-gray-200 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/20 group"
         >
           <div className="flex items-start justify-between mb-4">
-            <div className="text-sm text-gray-600 dark:text-dark-400 group-hover:text-orange-400 transition-colors">Estado Inventario</div>
-            <div className="p-2 bg-gray-100 dark:bg-dark-700 rounded-lg group-hover:bg-orange-500/10 transition-colors">
+            <div className="text-sm text-gray-600 group-hover:text-orange-400 transition-colors">Estado Inventario</div>
+            <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-orange-500/10 transition-colors">
               <Package className="w-5 h-5 text-blue-500 group-hover:text-blue-400 transition-colors" />
             </div>
           </div>
-          <div className="text-4xl font-bold text-gray-900 dark:text-white mb-1">{stats.ingredientesActivos}</div>
-          <div className="text-xs text-gray-600 dark:text-dark-400 group-hover:text-gray-700 dark:group-hover:text-dark-300 transition-colors">Ingredientes activos</div>
+          <div className="text-4xl font-bold text-gray-900 mb-1">{stats.ingredientesActivos}</div>
+          <div className="text-xs text-gray-600 group-hover:text-gray-700 transition-colors">Ingredientes activos</div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Ventas por Pizza */}
-        <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Ventas por Pizza</h3>
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Ventas por Pizza</h3>
           <div className="space-y-3">
             {ventasPorPizza.length > 0 ? (
               ventasPorPizza.map((pizza, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between p-3 bg-gray-100 dark:bg-dark-700 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-gray-100 rounded-lg"
                 >
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white">{pizza.name}</p>
-                    <p className="text-sm text-gray-600 dark:text-dark-400 capitalize">{pizza.type}</p>
+                    <p className="font-medium text-gray-900">{pizza.name}</p>
+                    <p className="text-sm text-gray-600 capitalize">{pizza.type}</p>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{pizza.total_quantity}</div>
+                  <div className="text-2xl font-bold text-gray-900">{pizza.total_quantity}</div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-12 text-gray-500 dark:text-dark-400">
+              <div className="text-center py-12 text-gray-500">
                 No hay ventas registradas
               </div>
             )}
@@ -344,21 +344,21 @@ export default function DashboardNew() {
         </div>
 
         {/* Distribución por Tamaño */}
-        <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Distribución por Tamaño</h3>
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Distribución por Tamaño</h3>
           <div className="space-y-4">
             {/* Tamaño L */}
             <div>
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-900 dark:text-white font-semibold">Tamaño L</span>
-                  <span className="text-sm text-gray-600 dark:text-dark-400">
+                  <span className="text-gray-900 font-semibold">Tamaño L</span>
+                  <span className="text-sm text-gray-600">
                     {ventasPorTamano.L.disponibles} masas disponibles
                   </span>
                 </div>
-                <span className="text-gray-900 dark:text-white font-bold">{ventasPorTamano.L.count}</span>
+                <span className="text-gray-900 font-bold">{ventasPorTamano.L.count}</span>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-dark-700 rounded-full h-2 overflow-hidden">
+              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                 <div
                   className="bg-orange-500 h-full rounded-full transition-all"
                   style={{
@@ -366,7 +366,7 @@ export default function DashboardNew() {
                   }}
                 />
               </div>
-              <div className="text-right text-xs text-gray-600 dark:text-dark-400 mt-1">
+              <div className="text-right text-xs text-gray-600 mt-1">
                 {Math.round((ventasPorTamano.L.count / ventasPorTamano.L.disponibles) * 100)}%
               </div>
             </div>
@@ -375,14 +375,14 @@ export default function DashboardNew() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-900 dark:text-white font-semibold">Tamaño M</span>
-                  <span className="text-sm text-gray-600 dark:text-dark-400">
+                  <span className="text-gray-900 font-semibold">Tamaño M</span>
+                  <span className="text-sm text-gray-600">
                     {ventasPorTamano.M.disponibles} masas disponibles
                   </span>
                 </div>
-                <span className="text-gray-900 dark:text-white font-bold">{ventasPorTamano.M.count}</span>
+                <span className="text-gray-900 font-bold">{ventasPorTamano.M.count}</span>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-dark-700 rounded-full h-2 overflow-hidden">
+              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                 <div
                   className="bg-orange-500 h-full rounded-full transition-all"
                   style={{
@@ -390,7 +390,7 @@ export default function DashboardNew() {
                   }}
                 />
               </div>
-              <div className="text-right text-xs text-gray-600 dark:text-dark-400 mt-1">
+              <div className="text-right text-xs text-gray-600 mt-1">
                 {Math.round((ventasPorTamano.M.count / ventasPorTamano.M.disponibles) * 100)}%
               </div>
             </div>
@@ -399,14 +399,14 @@ export default function DashboardNew() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-900 dark:text-white font-semibold">Tamaño S</span>
-                  <span className="text-sm text-gray-600 dark:text-dark-400">
+                  <span className="text-gray-900 font-semibold">Tamaño S</span>
+                  <span className="text-sm text-gray-600">
                     {ventasPorTamano.S.disponibles} masas disponibles
                   </span>
                 </div>
-                <span className="text-gray-900 dark:text-white font-bold">{ventasPorTamano.S.count}</span>
+                <span className="text-gray-900 font-bold">{ventasPorTamano.S.count}</span>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-dark-700 rounded-full h-2 overflow-hidden">
+              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                 <div
                   className="bg-orange-500 h-full rounded-full transition-all"
                   style={{
@@ -414,7 +414,7 @@ export default function DashboardNew() {
                   }}
                 />
               </div>
-              <div className="text-right text-xs text-gray-600 dark:text-dark-400 mt-1">
+              <div className="text-right text-xs text-gray-600 mt-1">
                 {Math.round((ventasPorTamano.S.count / ventasPorTamano.S.disponibles) * 100)}%
               </div>
             </div>
@@ -423,21 +423,21 @@ export default function DashboardNew() {
       </div>
 
       {/* Mise en Place en Tiempo Real */}
-      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Package className="w-5 h-5 text-orange-500" />
           Mise en Place del Turno Actual
-          <span className="ml-auto text-xs text-gray-500 dark:text-dark-500">
+          <span className="ml-auto text-xs text-gray-500">
             Actualización automática cada 10s
           </span>
         </h3>
 
         {loadingMise ? (
-          <div className="text-center py-8 text-gray-500 dark:text-dark-400">
+          <div className="text-center py-8 text-gray-500">
             Cargando mise en place...
           </div>
         ) : miseEnPlace.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-dark-400">
+          <div className="text-center py-8 text-gray-500">
             No hay turno abierto. Abre un turno para ver el mise en place.
           </div>
         ) : (
@@ -445,34 +445,34 @@ export default function DashboardNew() {
             {miseEnPlace.map((item: any) => (
               <div
                 key={item.id}
-                className="bg-gray-100 dark:bg-dark-700 rounded-lg p-4 border-l-4 transition-all hover:scale-102"
+                className="bg-gray-100 rounded-lg p-4 border-l-4 transition-all hover:scale-102"
                 style={{ borderLeftColor: item.status === 'green' ? '#22c55e' : item.status === 'yellow' ? '#eab308' : item.status === 'orange' ? '#f97316' : '#ef4444' }}
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
+                    <h4 className="font-semibold text-gray-900 text-sm">
                       {item.ingredient_name}
                     </h4>
-                    <p className="text-xs text-gray-600 dark:text-dark-400 mt-1">
+                    <p className="text-xs text-gray-600 mt-1">
                       {Math.round(item.current_quantity)} / {Math.round(item.initial_quantity)} {item.unit}
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <span className={`text-xs font-semibold px-2 py-1 rounded ${
-                      item.status === 'green' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                      item.status === 'yellow' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                      item.status === 'orange' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
-                      'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                      item.status === 'green' ? 'bg-green-100 text-green-700' :
+                      item.status === 'yellow' ? 'bg-yellow-100 text-yellow-700' :
+                      item.status === 'orange' ? 'bg-orange-100 text-orange-700' :
+                      'bg-red-100 text-red-700'
                     }`}>
                       {getStatusText(item.status)}
                     </span>
-                    <span className="text-xl font-bold text-gray-900 dark:text-white">
+                    <span className="text-xl font-bold text-gray-900">
                       {item.percentage}%
                     </span>
                   </div>
                 </div>
                 <div className="mt-3">
-                  <div className="w-full bg-gray-300 dark:bg-dark-600 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-gray-300 rounded-full h-2 overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${getStatusColor(item.status)}`}
                       style={{ width: `${Math.min(100, item.percentage)}%` }}
@@ -488,11 +488,11 @@ export default function DashboardNew() {
       {/* Open Shift Modal */}
       {showOpenShiftModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Abrir Turno
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
+            <p className="text-gray-600 mb-6 text-sm">
               Selecciona el tipo de turno que deseas abrir
             </p>
 
@@ -501,19 +501,19 @@ export default function DashboardNew() {
                 onClick={() => setShiftType('AM')}
                 className={`w-full p-4 rounded-lg border-2 transition-all ${
                   shiftType === 'AM'
-                    ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
-                    : 'border-gray-200 dark:border-dark-600 hover:border-gray-300'
+                    ? 'border-orange-500 bg-orange-50'
+                    : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="text-left">
-                    <p className="font-bold text-gray-900 dark:text-white">Turno AM (Mañana)</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Apertura y preparación del día</p>
+                    <p className="font-bold text-gray-900">Turno AM (Mañana)</p>
+                    <p className="text-sm text-gray-600">Apertura y preparación del día</p>
                   </div>
                   <div className={`w-5 h-5 rounded-full border-2 ${
                     shiftType === 'AM'
                       ? 'border-orange-500 bg-orange-500'
-                      : 'border-gray-300 dark:border-dark-600'
+                      : 'border-gray-300'
                   }`}>
                     {shiftType === 'AM' && (
                       <div className="w-full h-full flex items-center justify-center text-white text-xs">✓</div>
@@ -526,19 +526,19 @@ export default function DashboardNew() {
                 onClick={() => setShiftType('PM')}
                 className={`w-full p-4 rounded-lg border-2 transition-all ${
                   shiftType === 'PM'
-                    ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
-                    : 'border-gray-200 dark:border-dark-600 hover:border-gray-300'
+                    ? 'border-orange-500 bg-orange-50'
+                    : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="text-left">
-                    <p className="font-bold text-gray-900 dark:text-white">Turno PM (Tarde)</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Servicio de tarde y cierre</p>
+                    <p className="font-bold text-gray-900">Turno PM (Tarde)</p>
+                    <p className="text-sm text-gray-600">Servicio de tarde y cierre</p>
                   </div>
                   <div className={`w-5 h-5 rounded-full border-2 ${
                     shiftType === 'PM'
                       ? 'border-orange-500 bg-orange-500'
-                      : 'border-gray-300 dark:border-dark-600'
+                      : 'border-gray-300'
                   }`}>
                     {shiftType === 'PM' && (
                       <div className="w-full h-full flex items-center justify-center text-white text-xs">✓</div>
@@ -557,7 +557,7 @@ export default function DashboardNew() {
               </button>
               <button
                 onClick={() => setShowOpenShiftModal(false)}
-                className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
+                className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold rounded-lg transition-colors"
               >
                 Cancelar
               </button>

@@ -49,7 +49,6 @@ interface Store {
   recipes: Recipe[];
   currentShift: Shift | null;
   alerts: Alert[];
-  isDarkMode: boolean;
   setUser: (user: User | null) => void;
   setIngredients: (ingredients: Ingredient[]) => void;
   setRecipes: (recipes: Recipe[]) => void;
@@ -58,7 +57,6 @@ interface Store {
   updateIngredient: (ingredient: Ingredient) => void;
   addAlert: (alert: Alert) => void;
   removeAlert: (id: number) => void;
-  toggleDarkMode: () => void;
   logout: () => void;
 }
 
@@ -70,7 +68,6 @@ export const useStore = create<Store>()(
       recipes: [],
       currentShift: null,
       alerts: [],
-      isDarkMode: false,
 
       setUser: (user) => set({ user }),
       setIngredients: (ingredients) => set({ ingredients }),
@@ -94,18 +91,6 @@ export const useStore = create<Store>()(
         set((state) => ({
           alerts: state.alerts.filter((a) => a.id !== id),
         })),
-
-      toggleDarkMode: () =>
-        set((state) => {
-          const newMode = !state.isDarkMode;
-          // Update document class for dark mode
-          if (newMode) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-          return { isDarkMode: newMode };
-        }),
 
       logout: () => set({ user: null, currentShift: null }),
     }),
