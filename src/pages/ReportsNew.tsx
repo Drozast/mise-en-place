@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { Download, ShoppingBag } from 'lucide-react';
+import { getSocket } from '../lib/socket';
 
 export default function ReportsNew() {
   const [shoppingList, setShoppingList] = useState<any[]>([]);
@@ -10,6 +11,32 @@ export default function ReportsNew() {
 
   useEffect(() => {
     loadData();
+
+    // Set up socket listeners for real-time updates
+    const socket = getSocket();
+
+    socket.on('ingredient:updated', () => {
+      loadData();
+    });
+
+    socket.on('ingredient:restocked', () => {
+      loadData();
+    });
+
+    socket.on('sale:registered', () => {
+      loadData();
+    });
+
+    socket.on('alert:created', () => {
+      loadData();
+    });
+
+    return () => {
+      socket.off('ingredient:updated');
+      socket.off('ingredient:restocked');
+      socket.off('sale:registered');
+      socket.off('alert:created');
+    };
   }, [selectedDate]);
 
   const loadData = async () => {
