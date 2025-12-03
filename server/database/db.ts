@@ -301,6 +301,36 @@ const initialize = () => {
     console.error('Error en migración de checklist_signed:', error);
   }
 
+  // Tabla de completion de checklist para tracking de premios
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS shift_checklist_completion (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      shift_id INTEGER NOT NULL,
+      employee_name TEXT NOT NULL,
+      total_tasks INTEGER NOT NULL,
+      completed_tasks INTEGER NOT NULL,
+      completion_percentage INTEGER NOT NULL,
+      signed_at DATETIME NOT NULL,
+      FOREIGN KEY (shift_id) REFERENCES shifts(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Tabla de reportes de cierre de turno
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS shift_reports (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      shift_id INTEGER NOT NULL UNIQUE,
+      total_sales INTEGER NOT NULL,
+      total_revenue REAL DEFAULT 0,
+      ingredients_used TEXT,
+      alerts_generated INTEGER DEFAULT 0,
+      checklist_completion TEXT,
+      closed_by TEXT NOT NULL,
+      closed_at DATETIME NOT NULL,
+      FOREIGN KEY (shift_id) REFERENCES shifts(id) ON DELETE CASCADE
+    )
+  `);
+
   console.log('✅ Base de datos inicializada correctamente');
 };
 

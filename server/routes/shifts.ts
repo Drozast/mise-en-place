@@ -165,6 +165,11 @@ router.post('/', (req: Request, res: Response) => {
 router.put('/:id/close', (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const { closed_by } = req.body;
+
+    if (!closed_by) {
+      return res.status(400).json({ error: 'Se requiere el nombre del responsable que cierra el turno' });
+    }
 
     // Check if all critical tasks are done and mise en place is sufficient
     const shift = db.sqlite.prepare('SELECT * FROM shifts WHERE id = ?').get(id) as Shift;
@@ -207,6 +212,39 @@ router.put('/:id/close', (req: Request, res: Response) => {
       });
     }
 
+    // Generate shift report
+    // Get total sales
+    const salesData = db.sqlite.prepare(`
+      SELECT COUNT(*) as count, SUM(s.quantity) as total_quantity
+      FROM sales s
+      WHERE s.shift_id = ?
+    `).get(id) as any;
+
+    // Get ingredients used
+    const ingredientsUsed = db.sqlite.prepare(`
+      SELECT
+        i.name,
+        smp.initial_quantity - smp.current_quantity as used_quantity,
+        smp.unit
+      FROM shift_mise_en_place smp
+      JOIN ingredients i ON smp.ingredient_id = i.id
+      WHERE smp.shift_id = ? AND (smp.initial_quantity - smp.current_quantity) > 0
+    `).all(id) as any[];
+
+    // Get alerts generated during shift
+    const alertsCount = db.sqlite.prepare(`
+      SELECT COUNT(*) as count
+      FROM alerts
+      WHERE datetime(created_at) >= datetime((SELECT start_time FROM shifts WHERE id = ?))
+        AND datetime(created_at) <= datetime('now')
+    `).get(id) as any;
+
+    // Get checklist completion
+    const checklistCompletion = db.sqlite.prepare(`
+      SELECT * FROM shift_checklist_completion WHERE shift_id = ?
+    `).get(id) as any;
+
+    // Close the shift
     const stmt = db.sqlite.prepare(`
       UPDATE shifts
       SET status = 'closed', end_time = CURRENT_TIMESTAMP
@@ -215,10 +253,28 @@ router.put('/:id/close', (req: Request, res: Response) => {
 
     stmt.run(id);
 
+    // Save shift report
+    const reportStmt = db.sqlite.prepare(`
+      INSERT INTO shift_reports (
+        shift_id, total_sales, ingredients_used, alerts_generated,
+        checklist_completion, closed_by, closed_at
+      ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    `);
+
+    reportStmt.run(
+      id,
+      salesData?.total_quantity || 0,
+      JSON.stringify(ingredientsUsed),
+      alertsCount?.count || 0,
+      checklistCompletion ? JSON.stringify(checklistCompletion) : null,
+      closed_by
+    );
+
     const updated = db.sqlite.prepare('SELECT * FROM shifts WHERE id = ?').get(id);
     const tasks = db.sqlite.prepare('SELECT * FROM shift_tasks WHERE shift_id = ?').all(id);
+    const report = db.sqlite.prepare('SELECT * FROM shift_reports WHERE shift_id = ?').get(id);
 
-    const completeShift = { ...updated, tasks };
+    const completeShift = { ...updated, tasks, report };
 
     // Update weekly achievements
     updateWeeklyAchievements(shift.employee_name, tasks);
@@ -227,7 +283,17 @@ router.put('/:id/close', (req: Request, res: Response) => {
     const io = req.app.get('io');
     io.emit('shift:closed', completeShift);
 
-    res.json(completeShift);
+    res.json({
+      shift: completeShift,
+      report: {
+        total_sales: salesData?.total_quantity || 0,
+        ingredients_used: ingredientsUsed,
+        alerts_generated: alertsCount?.count || 0,
+        checklist_completion: checklistCompletion,
+        closed_by,
+        message: `Turno cerrado exitosamente. Se vendieron ${salesData?.total_quantity || 0} pizzas.`
+      }
+    });
   } catch (error) {
     console.error('Error closing shift:', error);
     res.status(500).json({ error: 'Error al cerrar turno' });
@@ -435,8 +501,11 @@ router.post('/:id/sign-checklist', (req: Request, res: Response) => {
       return res.status(400).json({ error: 'El checklist ya fue firmado' });
     }
 
-    // Verify all tasks are completed
+    // Get all tasks and calculate completion
     const tasks = db.sqlite.prepare('SELECT * FROM shift_tasks WHERE shift_id = ?').all(id) as any[];
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter((t: any) => t.completed).length;
+    const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
     const incompleteTasks = tasks.filter((t: any) => !t.completed);
 
     if (incompleteTasks.length > 0) {
@@ -457,6 +526,14 @@ router.post('/:id/sign-checklist', (req: Request, res: Response) => {
 
     stmt.run((user as any).name, id);
 
+    // Save checklist completion for rewards tracking
+    const completionStmt = db.sqlite.prepare(`
+      INSERT INTO shift_checklist_completion (shift_id, employee_name, total_tasks, completed_tasks, completion_percentage, signed_at)
+      VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    `);
+
+    completionStmt.run(id, shift.employee_name, totalTasks, completedTasks, completionPercentage);
+
     const updated = db.sqlite.prepare('SELECT * FROM shifts WHERE id = ?').get(id);
 
     // Emit update via socket
@@ -465,8 +542,13 @@ router.post('/:id/sign-checklist', (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      message: `Checklist firmado por ${(user as any).name}`,
-      shift: updated
+      message: `Checklist firmado por ${(user as any).name} - Completado: ${completionPercentage}%`,
+      shift: updated,
+      completion: {
+        total_tasks: totalTasks,
+        completed_tasks: completedTasks,
+        percentage: completionPercentage
+      }
     });
   } catch (error) {
     console.error('Error signing checklist:', error);
@@ -513,5 +595,123 @@ function updateWeeklyAchievements(employeeName: string, tasks: any[]) {
     `).run(weekStartStr, weekEndStr, employeeName, completedCount, totalCount);
   }
 }
+
+// GET employee checklist completion history
+router.get('/checklist-history/:employee_name', (req: Request, res: Response) => {
+  try {
+    const { employee_name } = req.params;
+
+    const history = db.sqlite.prepare(`
+      SELECT
+        scc.*,
+        s.date,
+        s.type as shift_type,
+        s.start_time,
+        s.end_time
+      FROM shift_checklist_completion scc
+      JOIN shifts s ON scc.shift_id = s.id
+      WHERE scc.employee_name = ?
+      ORDER BY scc.signed_at DESC
+      LIMIT 30
+    `).all(employee_name);
+
+    // Calculate stats
+    const stats = db.sqlite.prepare(`
+      SELECT
+        COUNT(*) as total_shifts,
+        SUM(CASE WHEN completion_percentage = 100 THEN 1 ELSE 0 END) as perfect_completions,
+        AVG(completion_percentage) as avg_completion
+      FROM shift_checklist_completion
+      WHERE employee_name = ?
+    `).get(employee_name) as any;
+
+    res.json({
+      employee_name,
+      history,
+      stats: {
+        total_shifts: stats?.total_shifts || 0,
+        perfect_completions: stats?.perfect_completions || 0,
+        avg_completion: Math.round(stats?.avg_completion || 0),
+        is_eligible_for_rewards: stats?.perfect_completions > 0
+      }
+    });
+  } catch (error) {
+    console.error('Error getting checklist history:', error);
+    res.status(500).json({ error: 'Error al obtener historial de checklist' });
+  }
+});
+
+// GET shift report by ID
+router.get('/reports/:shift_id', (req: Request, res: Response) => {
+  try {
+    const { shift_id } = req.params;
+
+    const report = db.sqlite.prepare(`
+      SELECT
+        sr.*,
+        s.date,
+        s.type as shift_type,
+        s.employee_name,
+        s.start_time,
+        s.end_time
+      FROM shift_reports sr
+      JOIN shifts s ON sr.shift_id = s.id
+      WHERE sr.shift_id = ?
+    `).get(shift_id);
+
+    if (!report) {
+      return res.status(404).json({ error: 'Reporte no encontrado' });
+    }
+
+    // Parse JSON fields
+    const reportData = report as any;
+    if (reportData.ingredients_used) {
+      reportData.ingredients_used = JSON.parse(reportData.ingredients_used);
+    }
+    if (reportData.checklist_completion) {
+      reportData.checklist_completion = JSON.parse(reportData.checklist_completion);
+    }
+
+    res.json(reportData);
+  } catch (error) {
+    console.error('Error getting shift report:', error);
+    res.status(500).json({ error: 'Error al obtener reporte de turno' });
+  }
+});
+
+// GET all employees eligible for rewards (100% completion)
+router.get('/eligible-employees', (req: Request, res: Response) => {
+  try {
+    const { date } = req.query;
+
+    let query = `
+      SELECT DISTINCT
+        scc.employee_name,
+        COUNT(scc.id) as perfect_shifts,
+        AVG(scc.completion_percentage) as avg_completion
+      FROM shift_checklist_completion scc
+      WHERE scc.completion_percentage = 100
+    `;
+
+    const params: any[] = [];
+
+    if (date) {
+      query += ` AND EXISTS (
+        SELECT 1 FROM shifts s
+        WHERE s.id = scc.shift_id AND s.date = ?
+      )`;
+      params.push(date);
+    }
+
+    query += ' GROUP BY scc.employee_name ORDER BY perfect_shifts DESC';
+
+    const eligibleEmployees = db.sqlite.prepare(query).all(...params);
+
+    res.json(eligibleEmployees);
+  } catch (error) {
+    console.error('Error getting eligible employees:', error);
+    res.status(500).json({ error: 'Error al obtener empleados elegibles' });
+  }
+});
 
 export default router;

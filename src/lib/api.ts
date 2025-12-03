@@ -60,12 +60,28 @@ export const api = {
     },
     getCurrent: () => request<any>('/shifts/current'),
     create: (data: any) => request<any>('/shifts', { method: 'POST', body: JSON.stringify(data) }),
-    close: (id: number) => request<any>(`/shifts/${id}/close`, { method: 'PUT' }),
+    close: (id: number, closed_by: string) => request<any>(`/shifts/${id}/close`, {
+      method: 'PUT',
+      body: JSON.stringify({ closed_by })
+    }),
     updateTask: (shiftId: number, taskId: number, completed: boolean) =>
       request<any>(`/shifts/${shiftId}/tasks/${taskId}`, {
         method: 'PUT',
         body: JSON.stringify({ completed }),
       }),
+    signChecklist: (shiftId: number, rut: string, password: string) =>
+      request<any>(`/shifts/${shiftId}/sign-checklist`, {
+        method: 'POST',
+        body: JSON.stringify({ rut, password })
+      }),
+    getChecklistHistory: (employee_name: string) =>
+      request<any>(`/shifts/checklist-history/${encodeURIComponent(employee_name)}`),
+    getShiftReport: (shift_id: number) =>
+      request<any>(`/shifts/reports/${shift_id}`),
+    getEligibleEmployees: (date?: string) => {
+      const query = date ? `?date=${date}` : '';
+      return request<any[]>(`/shifts/eligible-employees${query}`);
+    },
   },
 
   // Sales
