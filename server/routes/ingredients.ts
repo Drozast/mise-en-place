@@ -150,7 +150,7 @@ router.put('/:id', (req: Request, res: Response) => {
 router.post('/:id/restock', (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { new_percentage, new_quantity, authorized_by, shift_id } = req.body;
+    const { new_percentage, new_quantity, added_quantity, authorized_by, authorized_rut, shift_id } = req.body;
 
     const ingredient = db.sqlite.prepare('SELECT * FROM ingredients WHERE id = ?').get(id) as any;
 
@@ -158,27 +158,40 @@ router.post('/:id/restock', (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Ingrediente no encontrado' });
     }
 
-    let finalQuantity = ingredient.current_quantity;
-    let finalPercentage = ingredient.current_percentage;
+    let finalQuantity = ingredient.current_quantity || 0;
+    let finalPercentage = ingredient.current_percentage || 0;
 
-    // Si se proporciona cantidad, calcular porcentaje
-    if (new_quantity !== undefined) {
+    // Si se proporciona cantidad agregada, sumar a la actual
+    if (added_quantity !== undefined) {
+      finalQuantity = (ingredient.current_quantity || 0) + added_quantity;
+      finalPercentage = ingredient.total_quantity > 0
+        ? Math.round((finalQuantity / ingredient.total_quantity) * 100)
+        : 0;
+    }
+    // Si se proporciona cantidad nueva directa, usar esa
+    else if (new_quantity !== undefined) {
       finalQuantity = new_quantity;
-      finalPercentage = Math.round((new_quantity / ingredient.total_quantity) * 100);
+      finalPercentage = ingredient.total_quantity > 0
+        ? Math.round((new_quantity / ingredient.total_quantity) * 100)
+        : 0;
     }
     // Si se proporciona porcentaje, calcular cantidad
     else if (new_percentage !== undefined) {
       finalPercentage = new_percentage;
-      finalQuantity = Math.round((new_percentage / 100) * ingredient.total_quantity);
+      finalQuantity = Math.round((new_percentage / 100) * (ingredient.total_quantity || 1000));
     }
 
-    // Register restock
+    // Register restock in history
     const restockStmt = db.sqlite.prepare(`
       INSERT INTO restocks (ingredient_id, previous_percentage, new_percentage, authorized_by, shift_id)
       VALUES (?, ?, ?, ?, ?)
     `);
 
-    restockStmt.run(id, ingredient.current_percentage, finalPercentage, authorized_by, shift_id || null);
+    const authInfo = authorized_rut
+      ? `${authorized_by} (${authorized_rut})`
+      : authorized_by;
+
+    restockStmt.run(id, ingredient.current_percentage, finalPercentage, authInfo, shift_id || null);
 
     // Update ingredient
     const updateStmt = db.sqlite.prepare(`
@@ -192,9 +205,11 @@ router.post('/:id/restock', (req: Request, res: Response) => {
     // Emit update via socket
     const io = req.app.get('io');
     io.emit('ingredient:restocked', updated);
+    io.emit('ingredient:updated', updated);
 
     res.json(updated);
   } catch (error) {
+    console.error('Error restocking ingredient:', error);
     res.status(500).json({ error: 'Error al restoquear ingrediente' });
   }
 });

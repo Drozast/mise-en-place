@@ -418,19 +418,40 @@ function AddIngredientModal({ onClose, onSuccess }: any) {
 }
 
 function RestockModal({ ingredient, onClose, onSuccess }: any) {
-  const [newPercentage, setNewPercentage] = useState(100);
-  const [authorizedBy, setAuthorizedBy] = useState('');
+  const currentQuantity = ingredient.current_quantity || Math.round((ingredient.current_percentage / 100) * (ingredient.total_quantity || 1000));
+  const maxQuantity = ingredient.total_quantity || 1000;
+
+  const [addedQuantity, setAddedQuantity] = useState(0);
+  const [rut, setRut] = useState('');
+  const [password, setPassword] = useState('');
+
+  const newTotal = currentQuantity + addedQuantity;
+  const newPercentage = maxQuantity > 0 ? Math.round((newTotal / maxQuantity) * 100) : 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
+      // First verify admin credentials
+      const loginResponse = await api.auth.login(rut, password);
+
+      if (loginResponse.user.role !== 'chef') {
+        alert('Solo los administradores pueden reabastecer inventario');
+        return;
+      }
+
+      // If authorized, perform restock
       await api.ingredients.restock(ingredient.id, {
+        added_quantity: addedQuantity,
+        new_quantity: newTotal,
         new_percentage: newPercentage,
-        authorized_by: authorizedBy,
+        authorized_by: loginResponse.user.name,
+        authorized_rut: rut,
       });
+
       onSuccess();
     } catch (error: any) {
-      alert(error.message);
+      alert(error.message || 'Error al restoquear. Verifica tus credenciales.');
     }
   };
 
@@ -440,39 +461,90 @@ function RestockModal({ ingredient, onClose, onSuccess }: any) {
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
           Restoquear: {ingredient.name}
         </h2>
-        <div className="mb-6 p-4 bg-gray-100 dark:bg-dark-900 rounded-lg">
-          <p className="text-sm text-gray-600 dark:text-dark-400">Nivel actual</p>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">{ingredient.current_percentage}%</p>
+
+        <div className="mb-6 p-4 bg-gray-100 dark:bg-dark-900 rounded-lg space-y-2">
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-gray-600 dark:text-dark-400">Cantidad actual</p>
+            <p className="text-lg font-bold text-gray-900 dark:text-white">
+              {currentQuantity} {ingredient.unit}
+            </p>
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-gray-600 dark:text-dark-400">Cantidad máxima</p>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              {maxQuantity} {ingredient.unit}
+            </p>
+          </div>
+          <div className="flex justify-between items-center pt-2 border-t border-gray-300 dark:border-dark-700">
+            <p className="text-sm text-gray-600 dark:text-dark-400">Nivel actual</p>
+            <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+              {ingredient.current_percentage}%
+            </p>
+          </div>
         </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
-              Nuevo Porcentaje
+              Cantidad a agregar ({ingredient.unit})
             </label>
             <input
               type="number"
               min="0"
-              max="100"
+              step="any"
               required
               className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 focus:outline-none focus:border-orange-500 transition-colors font-medium"
-              value={newPercentage}
-              onChange={(e) => setNewPercentage(parseInt(e.target.value))}
+              value={addedQuantity}
+              onChange={(e) => setAddedQuantity(parseFloat(e.target.value) || 0)}
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
-              Autorizado por
-            </label>
-            <input
-              type="text"
-              required
-              placeholder="Nombre del encargado"
-              className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 placeholder-gray-400 dark:placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
-              value={authorizedBy}
-              onChange={(e) => setAuthorizedBy(e.target.value)}
-              autoComplete="off"
-            />
+
+          {addedQuantity > 0 && (
+            <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+              <p className="text-sm text-green-700 dark:text-green-400">
+                Nueva cantidad: <strong>{newTotal} {ingredient.unit}</strong> ({newPercentage}%)
+              </p>
+            </div>
+          )}
+
+          <div className="pt-4 border-t border-gray-300 dark:border-dark-700">
+            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+              Autorización (Solo Admin)
+            </p>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+                  RUT
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="12345678-9"
+                  className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 placeholder-gray-400 dark:placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+                  value={rut}
+                  onChange={(e) => setRut(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-300 mb-2">
+                  Contraseña
+                </label>
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••"
+                  className="w-full bg-gray-50 dark:bg-white border-2 border-gray-300 dark:border-dark-600 rounded-lg px-4 py-3 text-gray-900 dark:text-dark-900 placeholder-gray-400 dark:placeholder-dark-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+            </div>
           </div>
+
           <div className="flex gap-3 pt-4">
             <button
               type="submit"
