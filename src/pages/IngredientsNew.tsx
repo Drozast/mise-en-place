@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { useStore } from '../store/useStore';
-import { Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { Plus, RefreshCw, Trash2, Edit } from 'lucide-react';
 
 export default function IngredientsNew() {
   const { ingredients, setIngredients } = useStore();
+  const user = useStore((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showRestockModal, setShowRestockModal] = useState(false);
+  const [showEditMaxModal, setShowEditMaxModal] = useState(false);
   const [selectedIngredient, setSelectedIngredient] = useState<any>(null);
+  const [editingIngredients, setEditingIngredients] = useState<any[]>([]);
 
   useEffect(() => {
     loadIngredients();
@@ -118,9 +121,18 @@ export default function IngredientsNew() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Inventario Actual</h2>
-          <button className="px-4 py-2 text-sm bg-gray-700 dark:bg-gray-700 hover:bg-gray-600 dark:hover:bg-gray-600 text-white rounded-lg transition-colors">
-            Editar Manual
-          </button>
+          {user?.role === 'chef' && (
+            <button
+              onClick={() => {
+                setEditingIngredients(ingredients.map(i => ({ ...i })));
+                setShowEditMaxModal(true);
+              }}
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-gray-700 dark:bg-gray-700 hover:bg-gray-600 dark:hover:bg-gray-600 text-white rounded-lg transition-colors"
+            >
+              <Edit className="w-4 h-4" />
+              Editar Máximos
+            </button>
+          )}
         </div>
 
         {otherCategories.map((category) => {
@@ -180,6 +192,28 @@ export default function IngredientsNew() {
           onSuccess={() => {
             loadIngredients();
             setShowAddModal(false);
+          }}
+        />
+      )}
+
+      {showEditMaxModal && (
+        <EditMaxModal
+          ingredients={editingIngredients}
+          onClose={() => setShowEditMaxModal(false)}
+          onSave={async (updatedIngredients) => {
+            try {
+              for (const ing of updatedIngredients) {
+                await api.ingredients.update(ing.id, {
+                  total_quantity: ing.total_quantity,
+                  current_quantity: ing.current_quantity,
+                });
+              }
+              await loadIngredients();
+              setShowEditMaxModal(false);
+              alert('✅ Cantidades máximas actualizadas');
+            } catch (error) {
+              alert('Error al actualizar ingredientes');
+            }
           }}
         />
       )}
@@ -386,6 +420,144 @@ function RestockModal({ ingredient, onClose, onSuccess }: any) {
               className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
             >
               Restoquear
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function EditMaxModal({ ingredients, onClose, onSave }: any) {
+  const [editedIngredients, setEditedIngredients] = useState(ingredients);
+
+  const handleChange = (id: number, field: string, value: number) => {
+    setEditedIngredients((prev: any[]) =>
+      prev.map((ing: any) =>
+        ing.id === id ? { ...ing, [field]: value } : ing
+      )
+    );
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(editedIngredients);
+  };
+
+  // Separate masas from other ingredients
+  const masas = editedIngredients.filter((i: any) => i.category === 'masas');
+  const others = editedIngredients.filter((i: any) => i.category !== 'masas');
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-4xl shadow-2xl my-8">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          Editar Cantidades Máximas
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
+          Configura las cantidades máximas y actuales de cada ingrediente
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Masas Section */}
+          {masas.length > 0 && (
+            <div>
+              <h3 className="text-lg font-bold text-orange-600 dark:text-orange-400 mb-3">
+                🍕 Masas
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {masas.map((ing: any) => (
+                  <div key={ing.id} className="bg-gray-50 dark:bg-dark-900/50 border border-gray-200 dark:border-dark-700 rounded-lg p-4">
+                    <p className="font-semibold text-gray-900 dark:text-white mb-3">{ing.name}</p>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                          Cantidad Actual ({ing.unit})
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          step="any"
+                          value={ing.current_quantity || 0}
+                          onChange={(e) => handleChange(ing.id, 'current_quantity', parseFloat(e.target.value) || 0)}
+                          className="w-full bg-white dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded px-3 py-2 text-gray-900 dark:text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                          Cantidad Máxima ({ing.unit})
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          step="any"
+                          value={ing.total_quantity || 0}
+                          onChange={(e) => handleChange(ing.id, 'total_quantity', parseFloat(e.target.value) || 0)}
+                          className="w-full bg-white dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded px-3 py-2 text-gray-900 dark:text-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Other Ingredients */}
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+              Otros Ingredientes
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+              {others.map((ing: any) => (
+                <div key={ing.id} className="bg-gray-50 dark:bg-dark-900/50 border border-gray-200 dark:border-dark-700 rounded-lg p-3">
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2">{ing.name}</p>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                        Actual ({ing.unit})
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="any"
+                        value={ing.current_quantity || 0}
+                        onChange={(e) => handleChange(ing.id, 'current_quantity', parseFloat(e.target.value) || 0)}
+                        className="w-full bg-white dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded px-2 py-1 text-sm text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                        Máximo ({ing.unit})
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        step="any"
+                        value={ing.total_quantity || 0}
+                        onChange={(e) => handleChange(ing.id, 'total_quantity', parseFloat(e.target.value) || 0)}
+                        className="w-full bg-white dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded px-2 py-1 text-sm text-gray-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-dark-700">
+            <button
+              type="submit"
+              className="flex-1 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors"
+            >
+              Guardar Cambios
             </button>
             <button
               type="button"
