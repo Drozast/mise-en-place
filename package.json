@@ -16,6 +16,7 @@
     "db:reset": "rm -f data/pizza.db && npm run seed"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "better-sqlite3": "^9.2.2",
     "clsx": "^2.0.0",
     "cors": "^2.8.5",
@@ -33,6 +34,7 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/better-sqlite3": "^7.6.8",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
