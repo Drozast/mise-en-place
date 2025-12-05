@@ -81,14 +81,35 @@ export default function RecipesNew() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('¿Estás seguro de eliminar esta receta?')) return;
+  const handleDelete = async (id: number, recipeName: string) => {
+    const confirmed = confirm(
+      `⚠️ ADVERTENCIA: Vas a eliminar la receta "${recipeName}".\n\n` +
+      'Esta es una operación crítica que afectará:\n' +
+      '- El sistema de ventas\n' +
+      '- Los cálculos de inventario\n' +
+      '- Los reportes históricos\n\n' +
+      '¿Estás completamente seguro de que deseas continuar?'
+    );
+
+    if (!confirmed) return;
+
+    // Double confirmation
+    const doubleConfirm = prompt(
+      `Para confirmar, escribe el nombre de la receta exactamente como aparece: "${recipeName}"`
+    );
+
+    if (doubleConfirm !== recipeName) {
+      alert('El nombre no coincide. Operación cancelada.');
+      return;
+    }
 
     try {
       await api.recipes.delete(id);
+      alert(`✅ Receta "${recipeName}" eliminada exitosamente`);
       loadData();
     } catch (error) {
       console.error('Error eliminando receta:', error);
+      alert('❌ Error al eliminar la receta');
     }
   };
 
@@ -188,8 +209,9 @@ export default function RecipesNew() {
                     </p>
                   </div>
                   <button
-                    onClick={() => handleDelete(tabla.id)}
+                    onClick={() => handleDelete(tabla.id, tabla.name)}
                     className="p-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+                    title="Eliminar receta (requiere confirmación)"
                   >
                     <Trash2 className="w-4 h-4 text-white" />
                   </button>

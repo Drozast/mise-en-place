@@ -16,13 +16,18 @@ router.get('/', (req: Request, res: Response) => {
     // Get ingredients for each recipe
     const recipesWithIngredients = recipes.map((recipe: any) => {
       const ingredients = db.sqlite.prepare(`
-        SELECT ri.*, i.name as ingredient_name, i.unit as ingredient_unit
+        SELECT ri.*, i.name as ingredient_name, i.unit as ingredient_unit, i.category as ingredient_category
         FROM recipe_ingredients ri
         JOIN ingredients i ON ri.ingredient_id = i.id
         WHERE ri.recipe_id = ?
       `).all(recipe.id);
 
-      return { ...recipe, ingredients };
+      // Extract sauces from ingredients
+      const sauces = ingredients
+        .filter((ing: any) => ing.ingredient_category === 'salsas')
+        .map((ing: any) => ing.ingredient_name);
+
+      return { ...recipe, ingredients, sauces };
     });
 
     res.json(recipesWithIngredients);

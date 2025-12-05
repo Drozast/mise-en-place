@@ -44,18 +44,28 @@ router.get('/', (req: Request, res: Response) => {
 // POST register sale
 router.post('/', (req: Request, res: Response) => {
   try {
-    const { shift_id, recipe_id, quantity } = req.body;
+    const { shift_id, recipe_id, quantity, selected_sauces } = req.body;
 
     // Get recipe name for error messages
     const recipe = db.sqlite.prepare('SELECT name FROM recipes WHERE id = ?').get(recipe_id) as any;
 
     // Get recipe ingredients with their quantities
-    const recipeIngredients = db.sqlite.prepare(`
-      SELECT ri.*, i.name, i.unit, i.current_quantity, i.total_quantity, i.current_percentage
+    let recipeIngredients = db.sqlite.prepare(`
+      SELECT ri.*, i.name, i.unit, i.current_quantity, i.total_quantity, i.current_percentage, i.category
       FROM recipe_ingredients ri
       JOIN ingredients i ON ri.ingredient_id = i.id
       WHERE ri.recipe_id = ?
     `).all(recipe_id) as any[];
+
+    // If selected_sauces is provided, filter out sauces not selected
+    if (selected_sauces && selected_sauces.length > 0) {
+      recipeIngredients = recipeIngredients.filter((ing: any) => {
+        if (ing.category === 'salsas') {
+          return selected_sauces.includes(ing.name);
+        }
+        return true; // Keep all non-sauce ingredients
+      });
+    }
 
     // Validate ingredient availability BEFORE making any changes
     const missingIngredients: string[] = [];
@@ -181,11 +191,12 @@ router.post('/', (req: Request, res: Response) => {
 
     // Register sale
     const saleStmt = db.sqlite.prepare(`
-      INSERT INTO sales (shift_id, recipe_id, quantity)
-      VALUES (?, ?, ?)
+      INSERT INTO sales (shift_id, recipe_id, quantity, sauce_choices)
+      VALUES (?, ?, ?, ?)
     `);
 
-    const result = saleStmt.run(shift_id, recipe_id, quantity);
+    const sauceChoicesJson = selected_sauces ? JSON.stringify(selected_sauces) : null;
+    const result = saleStmt.run(shift_id, recipe_id, quantity, sauceChoicesJson);
 
     const newSale = db.sqlite.prepare(`
       SELECT s.*, r.name as recipe_name, r.type as recipe_type

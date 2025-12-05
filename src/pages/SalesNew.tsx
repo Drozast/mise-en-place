@@ -14,6 +14,7 @@ interface Recipe {
   name: string;
   size: string;
   type: string;
+  sauces?: string[];
 }
 
 export default function SalesNew() {
@@ -26,6 +27,7 @@ export default function SalesNew() {
     recipe_name: '',
     size: 'M',
     quantity: 1,
+    selected_sauces: [] as string[],
   });
 
   useEffect(() => {
@@ -55,6 +57,36 @@ export default function SalesNew() {
   // Get unique pizza names (without size)
   const uniquePizzas = Array.from(new Set(recipes.map(r => r.name))).sort();
 
+  // Find the selected recipe based on name and size
+  const getSelectedRecipe = () => {
+    return recipes.find(
+      r => r.name === formData.recipe_name && r.size === formData.size
+    );
+  };
+
+  const handlePizzaChange = (pizzaName: string) => {
+    setFormData({ ...formData, recipe_name: pizzaName, selected_sauces: [] });
+  };
+
+  const handleSizeChange = (size: string) => {
+    setFormData({ ...formData, size, selected_sauces: [] });
+  };
+
+  const handleSauceToggle = (sauce: string) => {
+    const currentSauces = formData.selected_sauces;
+    if (currentSauces.includes(sauce)) {
+      setFormData({
+        ...formData,
+        selected_sauces: currentSauces.filter(s => s !== sauce)
+      });
+    } else {
+      setFormData({
+        ...formData,
+        selected_sauces: [...currentSauces, sauce]
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -68,22 +100,25 @@ export default function SalesNew() {
       return;
     }
 
+    const recipe = getSelectedRecipe();
+    if (!recipe) {
+      alert('Receta no encontrada');
+      return;
+    }
+
+    // If recipe has multiple sauces, require sauce selection
+    if (recipe.sauces && recipe.sauces.length > 1 && formData.selected_sauces.length === 0) {
+      alert('Selecciona al menos una salsa');
+      return;
+    }
+
     setLoading(true);
     try {
-      // Find the recipe with the selected name and size
-      const recipe = recipes.find(
-        r => r.name === formData.recipe_name && r.size === formData.size
-      );
-
-      if (!recipe) {
-        alert('Receta no encontrada');
-        return;
-      }
-
       const response = await api.sales.create({
         shift_id: currentShift.id,
         recipe_id: recipe.id,
         quantity: formData.quantity,
+        selected_sauces: formData.selected_sauces.length > 0 ? formData.selected_sauces : undefined,
       });
 
       // Show warning if ingredients are low
@@ -96,6 +131,7 @@ export default function SalesNew() {
         recipe_name: '',
         size: 'M',
         quantity: 1,
+        selected_sauces: [],
       });
 
       // Reload data
@@ -138,7 +174,7 @@ export default function SalesNew() {
               <select
                 className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-orange-500 transition-colors"
                 value={formData.recipe_name}
-                onChange={(e) => setFormData({ ...formData, recipe_name: e.target.value })}
+                onChange={(e) => handlePizzaChange(e.target.value)}
                 required
               >
                 <option value="">Seleccionar pizza...</option>
@@ -157,7 +193,7 @@ export default function SalesNew() {
               <select
                 className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-orange-500 transition-colors"
                 value={formData.size}
-                onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                onChange={(e) => handleSizeChange(e.target.value)}
                 required
               >
                 <option value="S">Pequeña (S)</option>
@@ -165,6 +201,31 @@ export default function SalesNew() {
                 <option value="L">Grande (L)</option>
               </select>
             </div>
+
+            {/* Sauce selection for pizzas with multiple sauces */}
+            {getSelectedRecipe()?.sauces && getSelectedRecipe()!.sauces!.length > 1 && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Salsa(s) *
+                </label>
+                <div className="space-y-2">
+                  {getSelectedRecipe()!.sauces!.map((sauce) => (
+                    <label
+                      key={sauce}
+                      className="flex items-center gap-3 p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-orange-500 transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={formData.selected_sauces.includes(sauce)}
+                        onChange={() => handleSauceToggle(sauce)}
+                        className="w-5 h-5 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                      />
+                      <span className="text-gray-900 font-medium">{sauce}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

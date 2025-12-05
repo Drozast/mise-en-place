@@ -57,14 +57,36 @@ export default function IngredientsNew() {
     setShowRestockModal(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('¿Estás seguro de eliminar este ingrediente?')) return;
+  const handleDelete = async (id: number, ingredientName: string) => {
+    const confirmed = confirm(
+      `⚠️ ADVERTENCIA: Vas a eliminar el ingrediente "${ingredientName}".\n\n` +
+      'Esta es una operación crítica que afectará:\n' +
+      '- Todas las recetas que usan este ingrediente\n' +
+      '- El sistema de ventas\n' +
+      '- Los cálculos de inventario\n' +
+      '- La lista de compras\n\n' +
+      '¿Estás completamente seguro de que deseas continuar?'
+    );
+
+    if (!confirmed) return;
+
+    // Double confirmation
+    const doubleConfirm = prompt(
+      `Para confirmar, escribe el nombre del ingrediente exactamente: "${ingredientName}"`
+    );
+
+    if (doubleConfirm !== ingredientName) {
+      alert('El nombre no coincide. Operación cancelada.');
+      return;
+    }
 
     try {
       await api.ingredients.delete(id);
+      alert(`✅ Ingrediente "${ingredientName}" eliminado exitosamente`);
       loadIngredients();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error eliminando ingrediente:', error);
+      alert('❌ Error al eliminar ingrediente: ' + (error.message || 'Error desconocido'));
     }
   };
 

@@ -8,20 +8,26 @@ router.get('/shopping-list', (req: Request, res: Response) => {
   try {
     const { date } = req.query;
 
-    // Get all ingredients that need restocking
+    // Get all ingredients that need restocking with supplier info
     const lowIngredients = db.sqlite.prepare(`
       SELECT
-        id,
-        name,
-        unit,
-        current_percentage,
-        critical_threshold,
-        warning_threshold,
-        category,
-        (100 - current_percentage) as needed_percentage
-      FROM ingredients
-      WHERE current_percentage < warning_threshold
-      ORDER BY current_percentage ASC
+        i.id,
+        i.name,
+        i.unit,
+        i.current_percentage,
+        i.critical_threshold,
+        i.warning_threshold,
+        i.category,
+        i.current_quantity,
+        i.total_quantity,
+        (100 - i.current_percentage) as needed_percentage,
+        s.id as supplier_id,
+        s.name as supplier_name,
+        s.whatsapp as supplier_whatsapp
+      FROM ingredients i
+      LEFT JOIN suppliers s ON i.supplier_id = s.id
+      WHERE i.current_percentage < i.warning_threshold
+      ORDER BY s.name NULLS LAST, i.current_percentage ASC
     `).all();
 
     // Get recent sales to predict demand
