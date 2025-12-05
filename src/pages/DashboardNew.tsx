@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { TrendingUp, Pizza as PizzaIcon, AlertTriangle, Package, Clock, PlayCircle } from 'lucide-react';
+import { TrendingUp, Pizza as PizzaIcon, AlertTriangle, Package, Clock, PlayCircle, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useStore } from '../store/useStore';
@@ -10,7 +10,10 @@ export default function DashboardNew() {
   const user = useStore((state) => state.user);
   const [currentShift, setCurrentShift] = useState<any>(null);
   const [showOpenShiftModal, setShowOpenShiftModal] = useState(false);
+  const [showResetWeekModal, setShowResetWeekModal] = useState(false);
   const [shiftType, setShiftType] = useState<'AM' | 'PM'>('AM');
+  const [resetData, setResetData] = useState({ rut: '', password: '' });
+  const [resettingWeek, setResettingWeek] = useState(false);
 
   const [stats, setStats] = useState({
     totalVentas: 0,
@@ -64,6 +67,13 @@ export default function DashboardNew() {
       loadData();
     });
 
+    socket.on('week:reset', (data) => {
+      alert(`🔄 La semana ha sido reiniciada por ${data.resetBy}\n\nRecargando página...`);
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    });
+
     // Refresh mise en place every 30 seconds (reduced from 10 since we have real-time updates)
     const interval = setInterval(() => {
       loadMiseEnPlace();
@@ -77,6 +87,7 @@ export default function DashboardNew() {
       socket.off('shift:opened');
       socket.off('shift:closed');
       socket.off('alert:created');
+      socket.off('week:reset');
       clearInterval(interval);
     };
   }, []);
@@ -187,8 +198,74 @@ export default function DashboardNew() {
     }
   };
 
+  const handleResetWeek = async () => {
+    const confirmed = confirm(
+      '⚠️ ADVERTENCIA CRÍTICA ⚠️\n\n' +
+      'Vas a REINICIAR TODA LA SEMANA.\n\n' +
+      'Esto hará lo siguiente:\n' +
+      '• Restaurar todo el inventario al 100%\n' +
+      '• Eliminar TODAS las ventas registradas\n' +
+      '• Eliminar todas las alertas\n' +
+      '• Cerrar todos los turnos abiertos\n' +
+      '• Resetear el mise en place\n' +
+      '• Borrar los logros semanales\n\n' +
+      'Las RECETAS y PIZZAS se mantienen.\n\n' +
+      '¿Estás COMPLETAMENTE SEGURO?'
+    );
+
+    if (!confirmed) return;
+
+    setShowResetWeekModal(true);
+  };
+
+  const confirmResetWeek = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!resetData.rut || !resetData.password) {
+      alert('Debes ingresar RUT y contraseña');
+      return;
+    }
+
+    setResettingWeek(true);
+    try {
+      const response = await api.admin.resetWeek(resetData.rut, resetData.password);
+
+      alert(`✅ ${response.message}\n\nReiniciado por: ${response.resetBy}\nFecha: ${new Date(response.timestamp).toLocaleString('es-ES')}`);
+
+      // Reset form and close modal
+      setResetData({ rut: '', password: '' });
+      setShowResetWeekModal(false);
+
+      // Reload all data
+      await loadData();
+      await loadMiseEnPlace();
+      await loadCurrentShift();
+
+      // Redirect to dashboard to refresh everything
+      window.location.reload();
+    } catch (error: any) {
+      alert('❌ Error: ' + (error.message || 'No se pudo reiniciar la semana'));
+    } finally {
+      setResettingWeek(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {/* Admin Controls - Only for Chef */}
+      {user?.role === 'chef' && (
+        <div className="flex justify-end">
+          <button
+            onClick={handleResetWeek}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-md"
+            title="Reiniciar semana (Solo Admin)"
+          >
+            <RotateCcw className="w-4 h-4" />
+            Reiniciar Semana
+          </button>
+        </div>
+      )}
+
       {/* Shift Status Banner */}
       {!currentShift ? (
         <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-6 shadow-lg">
@@ -562,6 +639,84 @@ export default function DashboardNew() {
                 Cancelar
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Week Modal */}
+      {showResetWeekModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-50 border-4 border-red-600 rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <h2 className="text-2xl font-bold text-red-600 mb-4 flex items-center gap-2">
+              <RotateCcw className="w-6 h-6" />
+              Reiniciar Semana
+            </h2>
+
+            <div className="mb-6 p-4 bg-red-100 border border-red-300 rounded-lg">
+              <p className="text-sm text-red-800 font-semibold mb-2">
+                ⚠️ Esta acción NO se puede deshacer
+              </p>
+              <ul className="text-xs text-red-700 space-y-1">
+                <li>✓ Inventario vuelve al 100%</li>
+                <li>✓ Se eliminan todas las ventas</li>
+                <li>✓ Se cierran todos los turnos</li>
+                <li>✓ Se borran alertas y logros</li>
+                <li>✓ Las recetas se mantienen</li>
+              </ul>
+            </div>
+
+            <form onSubmit={confirmResetWeek} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  RUT del Administrador
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="12345678-9"
+                  className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-red-500 transition-colors font-medium"
+                  value={resetData.rut}
+                  onChange={(e) => setResetData({ ...resetData, rut: e.target.value })}
+                  autoComplete="off"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Contraseña
+                </label>
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••"
+                  className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-red-500 transition-colors font-medium"
+                  value={resetData.password}
+                  onChange={(e) => setResetData({ ...resetData, password: e.target.value })}
+                  autoComplete="off"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  disabled={resettingWeek}
+                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-semibold rounded-lg transition-colors"
+                >
+                  {resettingWeek ? 'Reiniciando...' : 'Confirmar Reinicio'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowResetWeekModal(false);
+                    setResetData({ rut: '', password: '' });
+                  }}
+                  disabled={resettingWeek}
+                  className="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-900 font-semibold rounded-lg transition-colors"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

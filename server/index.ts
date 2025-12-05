@@ -14,6 +14,7 @@ import alertsRouter from './routes/alerts.js';
 import reportsRouter from './routes/reports.js';
 import gamificationRouter from './routes/gamification.js';
 import rewardsRouter from './routes/rewards.js';
+import adminRouter from './routes/admin.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,6 +53,7 @@ app.use('/api/alerts', alertsRouter);
 app.use('/api/reports', reportsRouter);
 app.use('/api/gamification', gamificationRouter);
 app.use('/api/rewards', rewardsRouter);
+app.use('/api/admin', adminRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {

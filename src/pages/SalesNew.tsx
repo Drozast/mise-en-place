@@ -114,12 +114,19 @@ export default function SalesNew() {
 
     setLoading(true);
     try {
-      const response = await api.sales.create({
+      // Only send selected_sauces if the recipe has multiple sauces
+      const requestData: any = {
         shift_id: currentShift.id,
         recipe_id: recipe.id,
         quantity: formData.quantity,
-        selected_sauces: formData.selected_sauces.length > 0 ? formData.selected_sauces : undefined,
-      });
+      };
+
+      // Add selected_sauces only if there are multiple sauces and user selected some
+      if (recipe.sauces && recipe.sauces.length > 1 && formData.selected_sauces.length > 0) {
+        requestData.selected_sauces = formData.selected_sauces;
+      }
+
+      const response = await api.sales.create(requestData);
 
       // Show warning if ingredients are low
       if (response.warning) {

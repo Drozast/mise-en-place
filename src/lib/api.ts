@@ -143,4 +143,11 @@ export const api = {
     delete: (id: number) => request<any>(`/rewards/${id}`, { method: 'DELETE' }),
     getRandom: () => request<any>('/rewards/random/active'),
   },
+
+  // Admin
+  admin: {
+    resetWeek: (rut: string, password: string) =>
+      request<any>('/admin/reset-week', { method: 'POST', body: JSON.stringify({ rut, password }) }),
+    getResetHistory: () => request<any[]>('/admin/reset-history'),
+  },
 };
