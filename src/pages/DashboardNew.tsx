@@ -198,6 +198,26 @@ export default function DashboardNew() {
     }
   };
 
+  const formatRut = (value: string) => {
+    // Eliminar todo excepto números y K
+    const cleaned = value.replace(/[^0-9kK]/g, '');
+
+    // Limitar a 9 caracteres (8 dígitos + 1 dígito verificador)
+    const limited = cleaned.slice(0, 9);
+
+    // Formatear con guión antes del último dígito si tiene más de 1 carácter
+    if (limited.length > 1) {
+      return limited.slice(0, -1) + '-' + limited.slice(-1);
+    }
+
+    return limited;
+  };
+
+  const handleRutChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatRut(e.target.value);
+    setResetData({ ...resetData, rut: formatted });
+  };
+
   const handleResetWeek = async () => {
     const confirmed = confirm(
       '⚠️ ADVERTENCIA CRÍTICA ⚠️\n\n' +
@@ -676,9 +696,11 @@ export default function DashboardNew() {
                   placeholder="12345678-9"
                   className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-red-500 transition-colors font-medium"
                   value={resetData.rut}
-                  onChange={(e) => setResetData({ ...resetData, rut: e.target.value })}
+                  onChange={handleRutChange}
+                  maxLength={10}
                   autoComplete="off"
                 />
+                <p className="text-xs text-gray-500 mt-1">Ingresa tu RUT sin puntos</p>
               </div>
 
               <div>
