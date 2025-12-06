@@ -72,19 +72,12 @@ export default function SalesNew() {
     setFormData({ ...formData, size, selected_sauces: [] });
   };
 
-  const handleSauceToggle = (sauce: string) => {
-    const currentSauces = formData.selected_sauces;
-    if (currentSauces.includes(sauce)) {
-      setFormData({
-        ...formData,
-        selected_sauces: currentSauces.filter(s => s !== sauce)
-      });
-    } else {
-      setFormData({
-        ...formData,
-        selected_sauces: [...currentSauces, sauce]
-      });
-    }
+  const handleSauceSelect = (sauce: string) => {
+    // Solo permite seleccionar UNA salsa (reemplaza la anterior)
+    setFormData({
+      ...formData,
+      selected_sauces: [sauce]
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -108,7 +101,7 @@ export default function SalesNew() {
 
     // If recipe has multiple sauces, require sauce selection
     if (recipe.sauces && recipe.sauces.length > 1 && formData.selected_sauces.length === 0) {
-      alert('Selecciona al menos una salsa');
+      alert('Debes seleccionar qué salsa se usó');
       return;
     }
 
@@ -213,24 +206,32 @@ export default function SalesNew() {
             {getSelectedRecipe()?.sauces && getSelectedRecipe()!.sauces!.length > 1 && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Salsa(s) *
+                  ¿Qué salsa se usó? *
                 </label>
                 <div className="space-y-2">
                   {getSelectedRecipe()!.sauces!.map((sauce) => (
                     <label
                       key={sauce}
-                      className="flex items-center gap-3 p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-orange-500 transition-colors"
+                      className={`flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer transition-colors ${
+                        formData.selected_sauces.includes(sauce)
+                          ? 'border-orange-500 bg-orange-50'
+                          : 'border-gray-300 hover:border-orange-300'
+                      }`}
                     >
                       <input
-                        type="checkbox"
+                        type="radio"
+                        name="sauce"
                         checked={formData.selected_sauces.includes(sauce)}
-                        onChange={() => handleSauceToggle(sauce)}
-                        className="w-5 h-5 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                        onChange={() => handleSauceSelect(sauce)}
+                        className="w-5 h-5 text-orange-600 border-gray-300 focus:ring-orange-500"
                       />
                       <span className="text-gray-900 font-medium">{sauce}</span>
                     </label>
                   ))}
                 </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Solo se descontará la salsa que selecciones del inventario
+                </p>
               </div>
             )}
 
