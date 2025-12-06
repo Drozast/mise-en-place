@@ -191,12 +191,11 @@ router.post('/', (req: Request, res: Response) => {
 
     // Register sale
     const saleStmt = db.sqlite.prepare(`
-      INSERT INTO sales (shift_id, recipe_id, quantity, sauce_choices)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO sales (shift_id, recipe_id, quantity)
+      VALUES (?, ?, ?)
     `);
 
-    const sauceChoicesJson = selected_sauces ? JSON.stringify(selected_sauces) : null;
-    const result = saleStmt.run(shift_id, recipe_id, quantity, sauceChoicesJson);
+    const result = saleStmt.run(shift_id, recipe_id, quantity);
 
     const newSale = db.sqlite.prepare(`
       SELECT s.*, r.name as recipe_name, r.type as recipe_type
