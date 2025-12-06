@@ -20,7 +20,16 @@ router.post('/reset-week', async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    const validPassword = await bcrypt.compare(password, user.password);
+    // Check if password is hashed (starts with $2a$ or $2b$) or plain text
+    let validPassword = false;
+    if (user.password.startsWith('$2')) {
+      // Password is hashed, use bcrypt
+      validPassword = await bcrypt.compare(password, user.password);
+    } else {
+      // Password is plain text, compare directly
+      validPassword = password === user.password;
+    }
+
     if (!validPassword) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
