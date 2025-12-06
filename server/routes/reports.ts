@@ -14,20 +14,20 @@ router.get('/shopping-list', (req: Request, res: Response) => {
         i.id,
         i.name,
         i.unit,
-        i.current_percentage,
-        i.critical_threshold,
-        i.warning_threshold,
+        COALESCE(i.current_percentage, 0) as current_percentage,
+        COALESCE(i.critical_threshold, 50) as critical_threshold,
+        COALESCE(i.warning_threshold, 80) as warning_threshold,
         i.category,
-        i.current_quantity,
-        i.total_quantity,
-        (100 - i.current_percentage) as needed_percentage,
+        COALESCE(i.current_quantity, 0) as current_quantity,
+        COALESCE(i.total_quantity, 1000) as total_quantity,
+        (100 - COALESCE(i.current_percentage, 0)) as needed_percentage,
         s.id as supplier_id,
         s.name as supplier_name,
         s.whatsapp as supplier_whatsapp
       FROM ingredients i
       LEFT JOIN suppliers s ON i.supplier_id = s.id
-      WHERE i.current_percentage <= i.warning_threshold
-      ORDER BY s.name NULLS LAST, i.current_percentage ASC
+      WHERE COALESCE(i.current_percentage, 0) <= COALESCE(i.warning_threshold, 80)
+      ORDER BY s.name NULLS LAST, COALESCE(i.current_percentage, 0) ASC
     `).all();
 
     // Get recent sales to predict demand
