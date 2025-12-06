@@ -331,6 +331,33 @@ const initialize = () => {
     )
   `);
 
+  // Migración: Eliminar ingrediente "Pomodoro o crema" si existe
+  try {
+    const pomodoroOCrema = sqlite.prepare(`
+      SELECT id FROM ingredients WHERE name = 'Pomodoro o crema'
+    `).get() as any;
+
+    if (pomodoroOCrema) {
+      console.log('🔄 Eliminando ingrediente obsoleto "Pomodoro o crema"...');
+
+      // Primero eliminar referencias en recipe_ingredients
+      const deleteRecipeIngs = sqlite.prepare(`
+        DELETE FROM recipe_ingredients WHERE ingredient_id = ?
+      `).run(pomodoroOCrema.id);
+
+      console.log(`  - Eliminadas ${deleteRecipeIngs.changes} referencias en recetas`);
+
+      // Luego eliminar el ingrediente
+      const deleteIng = sqlite.prepare(`
+        DELETE FROM ingredients WHERE id = ?
+      `).run(pomodoroOCrema.id);
+
+      console.log(`✅ Ingrediente "Pomodoro o crema" eliminado correctamente`);
+    }
+  } catch (error) {
+    console.error('Error eliminando "Pomodoro o crema":', error);
+  }
+
   // Migración: Agregar Crema como opción a Pizza Verde
   try {
     const verdeNeedsCrema = sqlite.prepare(`
