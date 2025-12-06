@@ -444,20 +444,35 @@ function RestockModal({ ingredient, onClose, onSuccess }: any) {
   const [rut, setRut] = useState('');
   const [password, setPassword] = useState('');
 
+  // Format RUT with dash
+  const formatRut = (value: string) => {
+    const cleaned = value.replace(/[^0-9kK]/g, '');
+    const limited = cleaned.slice(0, 9);
+    if (limited.length > 1) {
+      return limited.slice(0, -1) + '-' + limited.slice(-1);
+    }
+    return limited;
+  };
+
+  const handleRutChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatRut(e.target.value);
+    setRut(formatted);
+  };
+
   const newTotal = currentQuantity + addedQuantity;
   const newPercentage = maxQuantity > 0 ? Math.round((newTotal / maxQuantity) * 100) : 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      // First verify admin credentials
-      const loginResponse = await api.auth.login(rut, password);
+    if (addedQuantity <= 0) {
+      alert('Debes agregar una cantidad mayor a 0');
+      return;
+    }
 
-      if (loginResponse.user.role !== 'chef') {
-        alert('Solo los administradores pueden reabastecer inventario');
-        return;
-      }
+    try {
+      // First verify credentials
+      const loginResponse = await api.auth.login(rut, password);
 
       // If authorized, perform restock
       await api.ingredients.restock(ingredient.id, {
@@ -540,11 +555,13 @@ function RestockModal({ ingredient, onClose, onSuccess }: any) {
                   type="text"
                   required
                   placeholder="12345678-9"
+                  maxLength={10}
                   className="w-full bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors font-medium"
                   value={rut}
-                  onChange={(e) => setRut(e.target.value)}
+                  onChange={handleRutChange}
                   autoComplete="off"
                 />
+                <p className="text-xs text-gray-500 mt-1">Ingresa tu RUT sin puntos</p>
               </div>
 
               <div>
