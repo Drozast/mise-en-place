@@ -26,7 +26,7 @@ router.get('/shopping-list', (req: Request, res: Response) => {
         s.whatsapp as supplier_whatsapp
       FROM ingredients i
       LEFT JOIN suppliers s ON i.supplier_id = s.id
-      WHERE i.current_percentage < i.warning_threshold
+      WHERE i.current_percentage <= i.warning_threshold
       ORDER BY s.name NULLS LAST, i.current_percentage ASC
     `).all();
 

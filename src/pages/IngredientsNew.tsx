@@ -182,14 +182,12 @@ export default function IngredientsNew() {
                   <div className="text-[10px] text-gray-600 mt-1 mb-2">
                     {percentage}%
                   </div>
-                  {user?.role === 'chef' && (
-                    <button
-                      onClick={() => handleRestock(masa)}
-                      className="w-full bg-orange-500 hover:bg-orange-600 text-white text-[10px] font-semibold py-1 px-2 rounded transition-colors"
-                    >
-                      + Restock
-                    </button>
-                  )}
+                  <button
+                    onClick={() => handleRestock(masa)}
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white text-[10px] font-semibold py-1 px-2 rounded transition-colors"
+                  >
+                    + Restock
+                  </button>
                 </div>
               );
             })}
