@@ -291,25 +291,92 @@ function PizzaDetailModal({ pizza, miseEnPlace, getMiseStatus, getStatusColor, g
 
           {/* Ingredientes agrupados por tamaño */}
           <div className="space-y-4">
-            {pizzas[0].ingredients?.map((ing: any, idx: number) => {
-              const miseStatus = getMiseStatus(ing.ingredient_name);
+            {(() => {
+              // Agrupar salsas si hay múltiples
+              const allIngredients = pizzas[0].ingredients || [];
+              const sauces = allIngredients.filter((ing: any) =>
+                ing.ingredient_name === 'Pomodoro' || ing.ingredient_name === 'Crema' ||
+                ing.ingredient_name === 'Pesto' || ing.ingredient_name === 'Salsa BBQ' ||
+                ing.ingredient_name === 'Aceite de oliva'
+              );
+              const nonSauces = allIngredients.filter((ing: any) =>
+                ing.ingredient_name !== 'Pomodoro' && ing.ingredient_name !== 'Crema' &&
+                ing.ingredient_name !== 'Pesto' && ing.ingredient_name !== 'Salsa BBQ' &&
+                ing.ingredient_name !== 'Aceite de oliva'
+              );
 
-              // Buscar las cantidades para cada tamaño
-              const quantities = {
-                L: pizzas.find((p: any) => p.size === 'L')?.ingredients[idx]?.quantity || 0,
-                M: pizzas.find((p: any) => p.size === 'M')?.ingredients[idx]?.quantity || 0,
-                S: pizzas.find((p: any) => p.size === 'S')?.ingredients[idx]?.quantity || 0,
-              };
+              const ingredientsToShow = [];
 
-              return (
-                <div
-                  key={idx}
-                  className="bg-dark-800/50 border border-gray-700/50 rounded-lg p-4"
-                >
-                  {/* Nombre del ingrediente */}
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="text-white font-semibold text-lg">{ing.ingredient_name}</h4>
-                  </div>
+              // Si hay múltiples salsas, agruparlas
+              if (sauces.length > 1) {
+                ingredientsToShow.push({
+                  isGroup: true,
+                  ingredient_name: sauces.map((s: any) => s.ingredient_name).join(' o '),
+                  ingredient_unit: sauces[0].ingredient_unit,
+                  sauces: sauces,
+                });
+              } else if (sauces.length === 1) {
+                ingredientsToShow.push(sauces[0]);
+              }
+
+              // Agregar el resto
+              ingredientsToShow.push(...nonSauces);
+
+              return ingredientsToShow.map((ing: any, idx: number) => {
+                if (ing.isGroup) {
+                  // Grupo de salsas
+                  const quantities = {
+                    L: pizzas.find((p: any) => p.size === 'L')?.ingredients.find((i: any) => i.ingredient_name === ing.sauces[0].ingredient_name)?.quantity || 0,
+                    M: pizzas.find((p: any) => p.size === 'M')?.ingredients.find((i: any) => i.ingredient_name === ing.sauces[0].ingredient_name)?.quantity || 0,
+                    S: pizzas.find((p: any) => p.size === 'S')?.ingredients.find((i: any) => i.ingredient_name === ing.sauces[0].ingredient_name)?.quantity || 0,
+                  };
+
+                  return (
+                    <div
+                      key={`group-${idx}`}
+                      className="bg-dark-800/50 border border-gray-700/50 rounded-lg p-4"
+                    >
+                      {/* Nombre del ingrediente */}
+                      <div className="flex justify-between items-center mb-3">
+                        <div>
+                          <h4 className="text-white font-semibold text-lg">{ing.ingredient_name}</h4>
+                          <p className="text-xs text-orange-400 mt-1">
+                            Se usa solo UNA de estas opciones por pizza
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Gramajes por tamaño */}
+                      <div className="flex gap-4 text-sm text-gray-400 mb-3">
+                        <span>Receta L: <span className="text-white font-semibold">{quantities.L} {ing.ingredient_unit}</span></span>
+                        <span>Receta M: <span className="text-white font-semibold">{quantities.M} {ing.ingredient_unit}</span></span>
+                        <span>Receta S: <span className="text-white font-semibold">{quantities.S} {ing.ingredient_unit}</span></span>
+                      </div>
+
+                      <div className="text-sm text-gray-400 italic">
+                        Al registrar venta se preguntará cuál se usó
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Ingrediente normal
+                const miseStatus = getMiseStatus(ing.ingredient_name);
+                const quantities = {
+                  L: pizzas.find((p: any) => p.size === 'L')?.ingredients.find((i: any) => i.ingredient_name === ing.ingredient_name)?.quantity || 0,
+                  M: pizzas.find((p: any) => p.size === 'M')?.ingredients.find((i: any) => i.ingredient_name === ing.ingredient_name)?.quantity || 0,
+                  S: pizzas.find((p: any) => p.size === 'S')?.ingredients.find((i: any) => i.ingredient_name === ing.ingredient_name)?.quantity || 0,
+                };
+
+                return (
+                  <div
+                    key={idx}
+                    className="bg-dark-800/50 border border-gray-700/50 rounded-lg p-4"
+                  >
+                    {/* Nombre del ingrediente */}
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="text-white font-semibold text-lg">{ing.ingredient_name}</h4>
+                    </div>
 
                   {/* Gramajes por tamaño */}
                   <div className="flex gap-4 text-sm text-gray-400 mb-3">
@@ -348,7 +415,8 @@ function PizzaDetailModal({ pizza, miseEnPlace, getMiseStatus, getStatusColor, g
                   )}
                 </div>
               );
-            })}
+              });
+            })()}
           </div>
 
           {/* Botones de acción */}
