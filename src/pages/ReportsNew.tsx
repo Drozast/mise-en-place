@@ -46,6 +46,7 @@ export default function ReportsNew() {
         api.reports.getShoppingList(),
         api.reports.getDaily(selectedDate),
       ]);
+      console.log('Shopping list data:', listData); // DEBUG
       setShoppingList(listData);
       setDailyReport(reportData);
     } catch (error) {
@@ -60,6 +61,11 @@ export default function ReportsNew() {
   };
 
   const handleExportToExcel = () => {
+    if (shoppingList.length === 0) {
+      alert('No hay ingredientes en la lista de compras para exportar');
+      return;
+    }
+
     // Group items by supplier
     const groupedBySupplier: { [key: string]: any[] } = {};
 
