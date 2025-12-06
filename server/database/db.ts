@@ -331,6 +331,46 @@ const initialize = () => {
     )
   `);
 
+  // Migración: Agregar Crema como opción a Pizza Verde
+  try {
+    const verdeNeedsCrema = sqlite.prepare(`
+      SELECT COUNT(*) as count
+      FROM recipes r
+      WHERE r.name = 'Verde'
+      AND NOT EXISTS (
+        SELECT 1 FROM recipe_ingredients ri
+        WHERE ri.recipe_id = r.id AND ri.ingredient_id = 131
+      )
+    `).get() as any;
+
+    if (verdeNeedsCrema && verdeNeedsCrema.count > 0) {
+      console.log('🔄 Agregando Crema como opción de salsa a Pizza Verde...');
+
+      const stmt = sqlite.prepare(`
+        INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity)
+        SELECT
+            r.id,
+            131 as ingredient_id,
+            CASE
+                WHEN r.size = 'L' THEN 100.0
+                WHEN r.size = 'M' THEN 100.0
+                WHEN r.size = 'S' THEN 50.0
+            END as quantity
+        FROM recipes r
+        WHERE r.name = 'Verde'
+        AND NOT EXISTS (
+            SELECT 1 FROM recipe_ingredients ri
+            WHERE ri.recipe_id = r.id AND ri.ingredient_id = 131
+        )
+      `);
+
+      const result = stmt.run();
+      console.log(`✅ Crema agregada a ${result.changes} recetas de Pizza Verde`);
+    }
+  } catch (error) {
+    console.error('Error en migración de Pizza Verde:', error);
+  }
+
   console.log('✅ Base de datos inicializada correctamente');
 };
 
